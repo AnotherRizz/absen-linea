@@ -16,44 +16,60 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMsg("");
+ const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setErrorMsg("");
 
-   const { data, error } = await supabase.auth.signInWithPassword({
-  email,
-  password,
-});
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-if (error) {
-  setErrorMsg(error.message);
-  setLoading(false);
-  return;
-}
+  if (error) {
+    setErrorMsg(error.message);
+    setLoading(false);
+    return;
+  }
 
-if (data.user) {
-  const { data: profile } = await supabase
+  // ambil session setelah login
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    setErrorMsg("Session tidak ditemukan");
+    setLoading(false);
+    return;
+  }
+
+  const userId = session.user.id;
+
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
-    .eq("id", data.user.id)
-    .single();
+    .eq("id", userId)
+    .maybeSingle();
 
-  if (profile?.role === "employee") {
-    navigate("/employee");
-  } else {
-    navigate("/dashboard-admin");
-  }
-}
-
+  if (profileError || !profile) {
+    setErrorMsg("Role user tidak ditemukan");
     setLoading(false);
-  };
+    return;
+  }
+
+  if (profile.role === "employee") {
+    navigate("/employee", { replace: true });
+  } else {
+    navigate("/dashboard-admin", { replace: true });
+  }
+
+  setLoading(false);
+};
 
   return (
     <div className="flex flex-col flex-1">
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div className="border border-slate-200 px-5 py-10 rounded-2xl">
-          
           <div className="mb-5 sm:mb-8">
             <img
               src="/images/brand/linea.png"
@@ -64,7 +80,6 @@ if (data.user) {
 
           <form onSubmit={handleLogin}>
             <div className="space-y-6">
-
               {/* EMAIL */}
               <div>
                 <Label>
@@ -75,7 +90,6 @@ if (data.user) {
                   placeholder="info@gmail.com"
                   value={email}
                   onChange={(e: any) => setEmail(e.target.value)}
-                  
                 />
               </div>
 
@@ -90,13 +104,11 @@ if (data.user) {
                     placeholder="Masukkan password"
                     value={password}
                     onChange={(e: any) => setPassword(e.target.value)}
-                    
                   />
 
                   <span
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
-                  >
+                    className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2">
                     {showPassword ? (
                       <EyeIcon className="fill-gray-500 size-5" />
                     ) : (
@@ -108,9 +120,7 @@ if (data.user) {
 
               {/* ERROR MESSAGE */}
               {errorMsg && (
-                <div className="text-sm text-red-500">
-                  {errorMsg}
-                </div>
+                <div className="text-sm text-red-500">{errorMsg}</div>
               )}
 
               {/* BUTTON */}
@@ -119,15 +129,12 @@ if (data.user) {
                   type="submit"
                   className="w-full"
                   size="sm"
-                  disabled={loading}
-                >
+                  disabled={loading}>
                   {loading ? "Memproses..." : "Masuk"}
                 </Button>
               </div>
-
             </div>
           </form>
-
         </div>
       </div>
     </div>
