@@ -3,11 +3,17 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import { supabase } from "../../services/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
-import { FingerprintIcon, Navigation } from "lucide-react";
+import {
+  FingerprintIcon,
+  Navigation,
+  CalendarCheck,
+  Plane,
+  Fingerprint,
+} from "lucide-react";
 
 export default function DashboardEmployee() {
-const { user, loading } = useAuth();
-const employeeId = user?.employeeId;
+  const { user, loading } = useAuth();
+  const employeeId = user?.employeeId;
 
   const [fullName, setFullName] = useState<string>("Employee");
   const [attendanceToday, setAttendanceToday] = useState<any>(null);
@@ -16,13 +22,13 @@ const employeeId = user?.employeeId;
   const [_recentLeaves, setRecentLeaves] = useState<any[]>([]);
 
   useEffect(() => {
-  if (!user?.employeeId) return;
+    if (!user?.employeeId) return;
 
-  fetchEmployee();
-  fetchDashboard();
-}, [user?.employeeId]);
+    fetchEmployee();
+    fetchDashboard();
+  }, [user?.employeeId]);
 
-if (loading) return null;
+  if (loading) return null;
 
   async function fetchEmployee() {
     const { data } = await supabase
@@ -94,10 +100,10 @@ if (loading) return null;
       <PageBreadcrumb pageTitle="Dashboard" />
 
       {/* HERO BANNER */}
-      <div className="mb-6 rounded-3xl md:max-h-64 overflow-hidden bg-gradient-to-r from-blue-900 via-indigo-950 to-black p-5 md:p-7 text-white shadow-lg">
-        <div className="grid items-center gap-6 md:grid-cols-3 ">
+      <div className="mb-6 rounded-3xl md:max-h-56 overflow-hidden bg-gradient-to-r from-blue-900 via-indigo-950 to-black p-5 md:p-7 text-white shadow-lg">
+        <div className="grid gap-6 md:grid-cols-4 ">
           {/* LEFT CONTENT */}
-          <div className=" md:col-span-2">
+          <div className=" md:col-span-3 md:mt-10">
             <h2 className="text-xl md:text-2xl font-semibold">
               Selamat Datang, {fullName} 👋
             </h2>
@@ -144,7 +150,7 @@ if (loading) return null;
               <div>
                 <p className="text-xs text-blue-300">Sisa Cuti</p>
                 <p className="text-sm md:text-base font-semibold flex gap-2">
-                  <Navigation/>
+                  <Navigation />
                   {leaveBalance} hari
                 </p>
               </div>
@@ -156,34 +162,60 @@ if (loading) return null;
             <img
               src="/images/brand/nura.png"
               alt="illustration"
-              className="h-28 md:h-64 lg:h-72 object-contain"
+              className="h-28 hidden md:block md:w-72 md:h-72 md:-mt-10 object-contain"
             />
           </div>
         </div>
       </div>
 
       {/* STAT CARDS */}
-      {/* <div className="grid gap-6 md:grid-cols-3">
 
-        <div className="rounded-2xl bg-gradient-to-r from-green-400 to-green-500 p-6 text-white shadow-md">
-          <p className="text-sm opacity-90">Kehadiran Bulan Ini</p>
-          <h3 className="mt-2 text-3xl font-bold">{attendanceMonth}</h3>
-          <p className="text-xs opacity-80">Total hari hadir</p>
+      <div className="grid gap-6 md:grid-cols-3">
+        {/* Kehadiran */}
+        <div className="flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm border border-gray-200">
+          <div>
+            <p className="text-sm text-gray-500">Kehadiran Bulan Ini</p>
+            <h3 className="mt-1 text-3xl font-semibold text-gray-900">
+              {attendanceMonth}
+            </h3>
+            <p className="text-xs text-gray-400">Total hari hadir</p>
+          </div>
+
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-green-100">
+            <CalendarCheck className="text-green-600 w-6 h-6" />
+          </div>
         </div>
 
-        <div className="rounded-2xl bg-gradient-to-r from-orange-400 to-orange-500 p-6 text-white shadow-md">
-          <p className="text-sm opacity-90">Sisa Cuti</p>
-          <h3 className="mt-2 text-3xl font-bold">{leaveBalance}</h3>
-          <p className="text-xs opacity-80">Hari tersisa</p>
+        {/* Sisa cuti */}
+        <div className="flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm border border-gray-200">
+          <div>
+            <p className="text-sm text-gray-500">Sisa Cuti</p>
+            <h3 className="mt-1 text-3xl font-semibold text-gray-900">
+              {leaveBalance}
+            </h3>
+            <p className="text-xs text-gray-400">Hari tersisa</p>
+          </div>
+
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-orange-100">
+            <Plane className="text-orange-600 w-6 h-6" />
+          </div>
         </div>
 
-        <div className="rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600 p-6 text-white shadow-md">
-          <p className="text-sm opacity-90">Status Hari Ini</p>
-          <h3 className="mt-2 text-2xl font-bold">{statusToday}</h3>
-          <p className="text-xs opacity-80">Presensi hari ini</p>
-        </div>
+        {/* Status presensi */}
+        <div className="flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm border border-gray-200">
+          <div>
+            <p className="text-sm text-gray-500">Status Hari Ini</p>
+            <h3 className="mt-1 text-2xl font-semibold text-gray-900">
+              {statusToday}
+            </h3>
+            <p className="text-xs text-gray-400">Presensi hari ini</p>
+          </div>
 
-      </div> */}
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-purple-100">
+            <Fingerprint className="text-purple-600 w-6 h-6" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
