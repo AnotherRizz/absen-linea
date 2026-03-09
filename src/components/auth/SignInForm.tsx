@@ -16,12 +16,12 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
- const handleLogin = async (e: React.FormEvent) => {
+const handleLogin = async (e: React.FormEvent) => {
   e.preventDefault();
   setLoading(true);
   setErrorMsg("");
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -32,35 +32,40 @@ export default function SignInForm() {
     return;
   }
 
-  // ambil session setelah login
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const userId = data.user?.id;
 
-  if (!session) {
-    setErrorMsg("Session tidak ditemukan");
+  if (!userId) {
+    setErrorMsg("User tidak ditemukan");
     setLoading(false);
     return;
   }
 
-  const userId = session.user.id;
-
+  // ambil role
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", userId)
     .maybeSingle();
 
-  if (profileError || !profile) {
-    setErrorMsg("Role user tidak ditemukan");
+  if (profileError) {
+    setErrorMsg(profileError.message);
     setLoading(false);
     return;
   }
 
-  if (profile.role === "employee") {
-    navigate("/employee", { replace: true });
+  const role = profile?.role;
+
+ if (role === "employee") {
+    // Memberikan jeda waktu agar AuthContext / Route Guard sempat terupdate
+    setTimeout(() => {
+      navigate("/employee", { replace: true });
+    }, 100); 
+  } else if (role === "admin") {
+    setTimeout(() => {
+      navigate("/dashboard-admin", { replace: true });
+    }, 100);
   } else {
-    navigate("/dashboard-admin", { replace: true });
+    setErrorMsg("Role user tidak ditemukan");
   }
 
   setLoading(false);

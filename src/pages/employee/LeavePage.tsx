@@ -33,7 +33,8 @@ export default function LeavePage() {
   const [quota, setQuota] = useState<any>(null);
   const [requests, setRequests] = useState<any[]>([]);
 
-  const { employeeId } = useAuth();
+const { user } = useAuth();
+const employeeId = user?.employeeId;
 
   useEffect(() => {
     if (!employeeId) return;

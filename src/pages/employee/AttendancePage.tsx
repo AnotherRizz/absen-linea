@@ -11,7 +11,8 @@ import FormatTime from "../../components/FormatTime";
 import { formatMinutes, sumMinutes } from "../../utils/timeFormatter";
 
 export default function AttendancePage() {
-  const { employeeId } = useAuth();
+ const { user} = useAuth();
+ const employeeId = user?.employeeId;
 
   const [todayRecord, setTodayRecord] = useState<any>(null);
   const [openDialog, setOpenDialog] = useState<"checkin" | "checkout" | null>(

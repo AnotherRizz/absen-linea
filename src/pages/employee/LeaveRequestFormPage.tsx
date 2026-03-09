@@ -12,7 +12,8 @@ export default function LeaveRequestFormPage() {
   const navigate = useNavigate();
   const { showDialog } = useDialog();
 
-  const { employeeId } = useAuth();
+  const { user  } = useAuth();
+const employeeId = user?.employeeId;
 
   const [leaveTypes, setLeaveTypes] = useState<any[]>([]);
   const [quota, setQuota] = useState<any>(null);

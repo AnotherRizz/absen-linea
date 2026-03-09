@@ -29,7 +29,7 @@ const getNavItems = (role: string | null): NavItem[] => {
   ];
 
   const adminItems: NavItem[] = [
-      {
+    {
       icon: <GridIcon />,
       name: "Dashboard",
       path: "/dashboard-admin",
@@ -75,11 +75,10 @@ const getNavItems = (role: string | null): NavItem[] => {
   ];
 
   if (role === "admin") {
-    return [ ...adminItems];
-  } else  {
-    return [ ...common,...employeeItems];
+    return adminItems;
   }
 
+  return [...common, ...employeeItems];
 };
 
 const othersItems: NavItem[] = [
@@ -94,8 +93,8 @@ const othersItems: NavItem[] = [
 ];
 
 const AppSidebar: React.FC = () => {
-  const { role } = useAuth();
-  const navItems = getNavItems(role);
+  const { user, loading } = useAuth();
+const navItems = getNavItems(user?.role ?? null);
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
 
@@ -113,6 +112,7 @@ const AppSidebar: React.FC = () => {
     (path: string) => location.pathname === path,
     [location.pathname]
   );
+  if (loading) return null;
 
   useEffect(() => {
     let submenuMatched = false;

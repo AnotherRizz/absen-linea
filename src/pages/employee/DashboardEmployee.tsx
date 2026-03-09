@@ -6,7 +6,8 @@ import { useAuth } from "../../context/AuthContext";
 import { FingerprintIcon, Navigation } from "lucide-react";
 
 export default function DashboardEmployee() {
-  const { user, employeeId } = useAuth();
+const { user, loading } = useAuth();
+const employeeId = user?.employeeId;
 
   const [fullName, setFullName] = useState<string>("Employee");
   const [attendanceToday, setAttendanceToday] = useState<any>(null);
@@ -15,11 +16,13 @@ export default function DashboardEmployee() {
   const [_recentLeaves, setRecentLeaves] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!user || !employeeId) return;
+  if (!user?.employeeId) return;
 
-    fetchEmployee();
-    fetchDashboard();
-  }, [user, employeeId]);
+  fetchEmployee();
+  fetchDashboard();
+}, [user?.employeeId]);
+
+if (loading) return null;
 
   async function fetchEmployee() {
     const { data } = await supabase

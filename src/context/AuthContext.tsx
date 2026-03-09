@@ -1,66 +1,91 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../services/supabaseClient";
 
-interface AuthContextType {
-  user: any;
+interface AuthUser {
+  id: string;
+  email: string;
   role: string | null;
   employeeId: string | null;
-  loading: boolean;
 }
+
+interface AuthContextType {
+  user: AuthUser | null;
+  loading: boolean;
+  refreshUser: () => Promise<void>;
+}
+
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  role: null,
-  employeeId: null,
   loading: true,
+  refreshUser: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: any) => {
-  const [user, setUser] = useState<any>(null);
-  const [role, setRole] = useState<string | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [employeeId, setEmployeeId] = useState<string | null>(null);
 
   useEffect(() => {
-    getSession();
+    initAuth();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      initAuth();
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
- const getSession = async () => {
-  const { data } = await supabase.auth.getSession();
-  const currentUser = data.session?.user;
+  const initAuth = async () => {
+    setLoading(true);
 
-  if (!currentUser) {
+    const { data } = await supabase.auth.getSession();
+    const sessionUser = data.session?.user;
+
+    if (!sessionUser) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
+    const fullUser = await buildUser(sessionUser);
+
+    setUser(fullUser);
     setLoading(false);
-    return;
-  }
+  };
 
-  setUser(currentUser);
+  const buildUser = async (sessionUser: any): Promise<AuthUser> => {
+    // ambil role
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", sessionUser.id)
+      .single();
 
-  // Ambil role
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", currentUser.id)
-    .maybeSingle();
+    // ambil employee
+    const { data: employee } = await supabase
+      .from("employees")
+      .select("id")
+      .eq("profile_id", sessionUser.id)
+      .maybeSingle();
 
-  setRole(profile?.role ?? null);
+    return {
+      id: sessionUser.id,
+      email: sessionUser.email,
+      role: profile?.role ?? null,
+      employeeId: employee?.id ?? null,
+    };
+  };
 
-  // Ambil employeeId
-  const { data: employee } = await supabase
-    .from("employees")
-    .select("id")
-    .eq("profile_id", currentUser.id)
-    .maybeSingle();
-
-  setEmployeeId(employee?.id ?? null);
-
-  setLoading(false);
-};
+  const refreshUser = async () => {
+    await initAuth();
+  };
 
   return (
- <AuthContext.Provider value={{ user, role, employeeId, loading }}>
-  {children}
-</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, loading, refreshUser }}>
+      {children}
+    </AuthContext.Provider>
   );
 };

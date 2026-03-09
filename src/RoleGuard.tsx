@@ -7,11 +7,17 @@ interface Props {
 }
 
 export default function RoleGuard({ children, allowedRoles }: Props) {
-  const { role, loading } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) return null;
 
-  if (!allowedRoles.includes(role ?? "")) {
+  // jika belum login
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // cek role
+  if (!allowedRoles.includes(user.role ?? "")) {
     return <Navigate to="/403" replace />;
   }
 
