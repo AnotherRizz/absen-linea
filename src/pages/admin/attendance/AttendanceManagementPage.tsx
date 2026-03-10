@@ -4,8 +4,9 @@ import PageMeta from "../../../components/common/PageMeta";
 
 import DailyAttendanceTab from "./tabs/DailyAttendanceTab";
 import ReportAttendanceTab from "./tabs/ReportAttendanceTab";
+import CalendarAttendanceTab from "./tabs/CalendarAttendanceTab";
 
-type TabType = "daily" | "report";
+type TabType = "daily" | "report" | "calendar";
 
 export default function AttendanceManagementPage() {
   const [activeTab, setActiveTab] = useState<TabType>("daily");
@@ -17,6 +18,9 @@ export default function AttendanceManagementPage() {
 
       case "report":
         return <ReportAttendanceTab />;
+
+      case "calendar":
+        return <CalendarAttendanceTab />;
 
       default:
         return null;
@@ -33,19 +37,16 @@ export default function AttendanceManagementPage() {
       <PageBreadcrumb pageTitle="Manajemen Absensi" />
 
       <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 xl:px-10 xl:py-12">
-
         {/* Tabs */}
         <div className="border-b border-gray-200 mb-6">
           <nav className="flex gap-6">
-
             <button
               onClick={() => setActiveTab("daily")}
               className={`pb-3 text-sm font-medium border-b-2 transition ${
                 activeTab === "daily"
                   ? "border-brand-500 text-brand-500"
                   : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
-            >
+              }`}>
               Absensi Harian
             </button>
 
@@ -55,17 +56,23 @@ export default function AttendanceManagementPage() {
                 activeTab === "report"
                   ? "border-brand-500 text-brand-500"
                   : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
-            >
+              }`}>
               Report Absensi
             </button>
-
+            <button
+              onClick={() => setActiveTab("calendar")}
+              className={`pb-3 text-sm font-medium border-b-2 transition ${
+                activeTab === "calendar"
+                  ? "border-brand-500 text-brand-500"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}>
+              Kalender Absensi
+            </button>
           </nav>
         </div>
 
         {/* Tab Content */}
         {renderContent()}
-
       </div>
     </div>
   );

@@ -228,6 +228,85 @@ layer(base);
 @utility menu-item-arrow-active {
   @apply rotate-180 text-brand-500 dark:text-brand-400;
 }
+/* ubah grid kalender jadi 4 kolom */
+.fc .fc-daygrid-body-natural .fc-daygrid-body,
+.fc .fc-scrollgrid-sync-table {
+  width: 100% !important;
+}
+
+.fc-daygrid-body-natural .fc-daygrid-day-events {
+  min-height: 80px;
+}
+
+/* ubah jumlah kolom */
+.fc-scrollgrid-sync-table {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+/* setiap cell */
+.fc-daygrid-day {
+  border: 1px solid #e5e7eb;
+  min-height: 150px;
+}
+@page {
+  size: A4;
+  margin: 20mm;
+}
+
+.slip-page{
+  width:210mm;
+  height:297mm;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.slip-container{
+  width:100%;
+  max-width:170mm;
+  border:1px solid #ddd;
+  padding:30px;
+  font-family:sans-serif;
+}
+
+.title{
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+  margin-bottom:30px;
+}
+
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  margin:8px 0;
+  font-size:14px;
+}
+
+.total{
+  font-weight:bold;
+  font-size:16px;
+}
+
+@media print{
+
+  body *{
+    visibility:hidden;
+  }
+
+  #print-area,
+  #print-area *{
+    visibility:visible;
+  }
+
+  #print-area{
+    position:absolute;
+    left:0;
+    top:0;
+  }
+
+}
 
 @utility menu-item-arrow-inactive {
   @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;

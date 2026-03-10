@@ -6,7 +6,7 @@ import { supabase } from "../../services/supabaseClient";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [userEmail, setUserEmail] = useState<string>("-");
   const [fullName, setFullName] = useState<string>("User");
 
   const navigate = useNavigate();
@@ -20,34 +20,45 @@ export default function UserDropdown() {
   }
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchEmployee = async () => {
+
+      /* ambil auth user */
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      setUser(user);
-
       if (!user) return;
 
-      // ambil nama dari tabel employees
+      setUserEmail(user.email ?? "-");
+
+      /* ambil profile */
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("employee_id")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile?.employee_id) return;
+
+      /* ambil employee */
       const { data: employee } = await supabase
         .from("employees")
         .select("full_name")
-        .eq("profile_id", user.id)
-        .maybeSingle();
+        .eq("id", profile.employee_id)
+        .single();
 
-      setFullName(employee?.full_name || "User");
+      if (employee) {
+        setFullName(employee.full_name);
+      }
     };
 
-    fetchUser();
+    fetchEmployee();
   }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/signin");
   };
-
-  const userEmail = user?.email || "-";
 
   return (
     <div className="relative">
@@ -87,7 +98,6 @@ export default function UserDropdown() {
         onClose={closeDropdown}
         className="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border bg-white p-3 shadow-lg"
       >
-        {/* USER INFO */}
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm">
             {fullName}
@@ -98,7 +108,6 @@ export default function UserDropdown() {
           </span>
         </div>
 
-        {/* MENU */}
         <ul className="flex flex-col gap-1 pt-4 pb-3 border-b">
           <li>
             <DropdownItem
@@ -123,7 +132,6 @@ export default function UserDropdown() {
           </li>
         </ul>
 
-        {/* LOGOUT */}
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 mt-3 rounded-lg hover:bg-gray-100"

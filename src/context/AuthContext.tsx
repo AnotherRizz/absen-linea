@@ -5,6 +5,7 @@ interface AuthUser {
   id: string;
   email: string;
   role: string | null;
+  full_name: string | null;
   employeeId: string | null;
 }
 
@@ -57,25 +58,25 @@ export const AuthProvider = ({ children }: any) => {
   };
 
   const buildUser = async (sessionUser: any): Promise<AuthUser> => {
-    // ambil role
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from("profiles")
-      .select("role")
+      .select(`
+        role,
+        employee_id
+      `)
       .eq("id", sessionUser.id)
       .single();
 
-    // ambil employee
-    const { data: employee } = await supabase
-      .from("employees")
-      .select("id")
-      .eq("profile_id", sessionUser.id)
-      .maybeSingle();
+    if (error) {
+      console.error("Profile fetch error:", error);
+    }
 
     return {
       id: sessionUser.id,
       email: sessionUser.email,
+      full_name: sessionUser.full_name,
       role: profile?.role ?? null,
-      employeeId: employee?.id ?? null,
+      employeeId: profile?.employee_id ?? null,
     };
   };
 

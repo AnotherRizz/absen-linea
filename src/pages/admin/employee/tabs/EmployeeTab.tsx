@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../../services/supabaseClient";
 import Button from "../../../../components/ui/button/Button";
 import { Link } from "react-router";
+import { File } from "lucide-react";
 
 interface Employee {
   id: string;
@@ -64,7 +65,6 @@ export default function EmployeeTab() {
       setEmployees(transformedData);
       setTotal(count || 0);
     }
-    console.log(data);
 
     setLoading(false);
   };
@@ -102,6 +102,9 @@ export default function EmployeeTab() {
             <option value={50}>50 baris</option>
             <option value={100}>100 baris</option>
           </select>
+          <Link to="/employee-management/import">
+            <Button className=" bg-green-500 hover:bg-green-600"><File/> Upload Excel</Button>
+          </Link>
           <Link to="/employee-management/create">
             <Button>Tambah Karyawan</Button>
           </Link>
@@ -113,10 +116,8 @@ export default function EmployeeTab() {
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100 dark:bg-gray-800">
             <tr>
-              <th className="px-4 py-3 text-left">Name</th>
+              <th className="px-4 py-3 text-left">Nama Karyawan</th>
               <th className="px-4 py-3 text-left">Email</th>
-              <th className="px-4 py-3 text-left">No Telp</th>
-              <th className="px-4 py-3 text-left">Tipe</th>
               <th className="px-4 py-3 text-left">Jabatan</th>
               <th className="px-4 py-3 text-left">Aksi</th>
             </tr>
@@ -134,10 +135,6 @@ export default function EmployeeTab() {
                 <tr key={emp.id} className="border-t">
                   <td className="px-4 py-3">{emp.full_name}</td>
                   <td className="px-4 py-3">{emp.email || "-"}</td>
-                  <td className="px-4 py-3">{emp.phone || "-"}</td>
-                  <td className="px-4 py-3">
-                    {emp.employment_types?.name ?? "-"}
-                  </td>
                   <td className="px-4 py-3">{emp.positions?.name ?? "-"}</td>
                   <td className="px-4 py-3 flex gap-2 items-center">
                     <Link to={`/employee-management/${emp.id}`}>

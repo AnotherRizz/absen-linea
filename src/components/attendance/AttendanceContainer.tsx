@@ -23,7 +23,7 @@ useEffect(() => {
     const { data, error } = await supabase
       .from("employees")
       .select("id")
-      .eq("profile_id", user.id)
+      .eq("id", user?.employeeId)
       .maybeSingle();
 
     if (error) {

@@ -21,6 +21,10 @@ import LeavePage from "./pages/employee/LeavePage";
 import LeaveRequestFormPage from "./pages/employee/LeaveRequestFormPage";
 import AttendanceManagementPage from "./pages/admin/attendance/AttendanceManagementPage";
 import DashboardEmployee from "./pages/employee/DashboardEmployee";
+import EmployeeImportPage from "./pages/admin/employee/EmployeeImportPage";
+import PayrollManagementPage from "./pages/admin/payroll/PayrollManagementPage";
+import PayrollDetailPage from "./pages/admin/payroll/PayrollDetailPage";
+import PayrollBatchDetailPage from "./pages/admin/payroll/PayrollBatchDetailPage";
 export default function App() {
   return (
     <>
@@ -92,6 +96,14 @@ export default function App() {
                 </RoleGuard>
               }
             />
+            <Route
+              path="/employee-management/import"
+              element={
+                <RoleGuard allowedRoles={["admin"]}>
+                  <EmployeeImportPage />
+                </RoleGuard>
+              }
+            />
 
             <Route
               path="/leave-management"
@@ -121,7 +133,23 @@ export default function App() {
               path="/payroll"
               element={
                 <RoleGuard allowedRoles={["admin"]}>
-                  <Blank />
+                  <PayrollManagementPage />
+                </RoleGuard>
+              }
+            />
+             <Route
+              path="/payroll-slip/:id"
+              element={
+                <RoleGuard allowedRoles={["admin"]}>
+                  <PayrollDetailPage />
+                </RoleGuard>
+              }
+            />
+             <Route
+              path="/payroll-detail/:id"
+              element={
+                <RoleGuard allowedRoles={["admin"]}>
+                  <PayrollBatchDetailPage />
                 </RoleGuard>
               }
             />
