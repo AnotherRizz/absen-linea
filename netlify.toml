@@ -1,4 +1,9 @@
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Permissions-Policy = "camera=*, geolocation=*, microphone=*"
+
 [[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
+  from = "/*"
+  to = "/index.html"
+  status = 200

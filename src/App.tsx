@@ -28,6 +28,7 @@ import PayrollBatchDetailPage from "./pages/admin/payroll/PayrollBatchDetailPage
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import ReimbursementManagementPage from "./pages/admin/reimbursement/ReimbursementManagementPage";
 import ReimbursementPage from "./pages/employee/ReimbursementPage";
+import EditProfilePage from "./pages/employee/EditProfilePage";
 export default function App() {
   return (
     <>
@@ -44,7 +45,7 @@ export default function App() {
             }>
               
             {/* Others Page */}
-            <Route path="/profile" element={<Blank />} />
+            <Route path="/profile" element={<EditProfilePage />} />
             <Route path="/" element={<Blank />} />
             <Route path="/blank" element={<Blank />} />
             {/* employee page */}

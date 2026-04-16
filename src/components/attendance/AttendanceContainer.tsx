@@ -184,7 +184,7 @@ const handleSubmit = async () => {
     <div className="space-y-4">
 
       <h3 className="text-lg font-semibold text-center">
-        {type === "checkin" ? "Check In" : "Check Out"}
+        {type === "checkin" ? "Absen Masuk" : "Absen Pulang"}
       </h3>
 
       {step === "camera" && (

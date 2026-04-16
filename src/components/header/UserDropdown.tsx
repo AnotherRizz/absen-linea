@@ -120,7 +120,7 @@ export default function UserDropdown() {
             </DropdownItem>
           </li>
 
-          <li>
+          {/* <li>
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
@@ -129,7 +129,7 @@ export default function UserDropdown() {
             >
               Account Settings
             </DropdownItem>
-          </li>
+          </li> */}
         </ul>
 
         <button

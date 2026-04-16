@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { AlertTriangle } from "lucide-react";
 
 export default function CameraCapture({ setPhoto, location }: any) {
@@ -6,8 +6,102 @@ export default function CameraCapture({ setPhoto, location }: any) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const [preview, setPreview] = useState(false);
+  const [preview, setPreview] = useState(true); // Start with video element visible
   const [error, setError] = useState<string | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
+
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    setCameraReady(false);
+  }, []);
+
+  const startCamera = useCallback(async () => {
+    setError(null);
+    setCameraReady(false);
+    setPreview(true); // Ensure video element is in DOM
+
+    // Small delay to ensure video element is mounted
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    try {
+      // Check if mediaDevices API is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setError(
+          "Browser tidak mendukung akses kamera. Pastikan Anda menggunakan HTTPS dan browser yang mendukung."
+        );
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "user",
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+        },
+      });
+
+      streamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+
+        // Wait for video to be ready before marking as ready
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current
+            ?.play()
+            .then(() => {
+              setCameraReady(true);
+            })
+            .catch((playErr) => {
+              console.error("Video play error:", playErr);
+              setError(
+                "Kamera berhasil diakses tapi video gagal dimainkan. Coba refresh halaman."
+              );
+            });
+        };
+      }
+    } catch (err: any) {
+      console.error("Camera error:", err);
+      setPreview(false);
+      if (err.name === "NotAllowedError") {
+        setError(
+          "Akses kamera ditolak. Silakan izinkan akses kamera di pengaturan browser Anda."
+        );
+      } else if (err.name === "NotFoundError") {
+        setError("Kamera tidak ditemukan pada perangkat ini.");
+      } else if (err.name === "NotReadableError") {
+        setError(
+          "Kamera sedang digunakan oleh aplikasi lain. Tutup aplikasi lain dan coba lagi."
+        );
+      } else if (err.name === "OverconstrainedError") {
+        // Retry without constraints
+        try {
+          const fallbackStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+          streamRef.current = fallbackStream;
+          if (videoRef.current) {
+            setPreview(true);
+            videoRef.current.srcObject = fallbackStream;
+            videoRef.current.onloadedmetadata = () => {
+              videoRef.current?.play().then(() => setCameraReady(true));
+            };
+          }
+        } catch {
+          setError(
+            "Kamera tidak dapat diakses. Pastikan tidak ada aplikasi lain yang menggunakan kamera."
+          );
+        }
+      } else {
+        setError(
+          `Kamera tidak dapat diakses (${err.name}). Pastikan tidak ada aplikasi lain yang menggunakan kamera.`
+        );
+      }
+    }
+  }, []);
 
   useEffect(() => {
     startCamera();
@@ -15,39 +109,7 @@ export default function CameraCapture({ setPhoto, location }: any) {
     return () => {
       stopCamera();
     };
-  }, []);
-
-  const startCamera = async () => {
-    setError(null);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-      });
-
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-
-      setPreview(true);
-    } catch (err: any) {
-      if (err.name === "NotAllowedError") {
-        setError("Akses kamera ditolak. Silakan izinkan akses kamera di pengaturan browser Anda.");
-      } else if (err.name === "NotFoundError") {
-        setError("Kamera tidak ditemukan pada perangkat ini.");
-      } else {
-        setError("Kamera tidak dapat diakses. Pastikan tidak ada aplikasi lain yang menggunakan kamera.");
-      }
-    }
-  };
-
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-  };
+  }, [startCamera, stopCamera]);
 
   const capture = () => {
     if (!location || !location.latitude || !location.longitude) {
@@ -124,12 +186,24 @@ export default function CameraCapture({ setPhoto, location }: any) {
       )}
 
       {preview ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          className="rounded-2xl w-full border border-gray-200 dark:border-gray-700"
-          style={{ transform: "scaleX(-1)" }}
-        />
+        <div className="relative">
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="rounded-2xl w-full border border-gray-200 dark:border-gray-700"
+            style={{ transform: "scaleX(-1)" }}
+          />
+          {!cameraReady && !error && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-2xl">
+              <div className="text-center text-gray-500 dark:text-gray-400">
+                <div className="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                Memuat kamera...
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
         !error && (
           <div className="text-center p-6 bg-gray-100 dark:bg-gray-800 rounded-2xl text-gray-500 dark:text-gray-400">
@@ -143,17 +217,21 @@ export default function CameraCapture({ setPhoto, location }: any) {
       {preview ? (
         <button
           onClick={capture}
-          disabled={!locationReady}
+          disabled={!locationReady || !cameraReady}
           className="btn-primary w-full py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {locationReady ? "📸 Ambil Foto" : "⏳ Menunggu Lokasi..."}
+          {!cameraReady
+            ? " Memuat Kamera..."
+            : locationReady
+            ? " Ambil Foto"
+            : " Menunggu Lokasi..."}
         </button>
       ) : (
         <button
           onClick={retry}
           className="btn-secondary w-full py-3 rounded-xl"
         >
-          🔄 Ulangi Foto
+           Ulangi Foto
         </button>
       )}
 

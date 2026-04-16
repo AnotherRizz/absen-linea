@@ -120,7 +120,7 @@ export default function AttendancePage() {
     ? "Selesai"
     : todayRecord?.check_in
       ? "Sedang Bekerja"
-      : "Belum Check In";
+      : "Belum Absen";
 
   return (
     <>

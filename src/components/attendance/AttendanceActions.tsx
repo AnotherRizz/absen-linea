@@ -9,7 +9,7 @@ export default function AttendanceActions({
       onClick={onCheckIn}
       className="w-full bg-black text-white py-3 rounded-xl text-lg"
     >
-      {loading ? "Memproses..." : "Check In"}
+      {loading ? "Memproses..." : "Absen Masuk"}
     </button>
   );
 }
