@@ -72,6 +72,11 @@ const getNavItems = (role: string | null): NavItem[] => {
       name: "Pengajuan Cuti",
       path: "/leave",
     },
+    {
+      icon: <HandCoinsIcon />,
+      name: "Reimbursement",
+      path: "/reimbursement-employee",
+    },
   ];
 
   if (role === "admin") {

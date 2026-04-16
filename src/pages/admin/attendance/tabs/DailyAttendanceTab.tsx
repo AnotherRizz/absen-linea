@@ -7,7 +7,7 @@ import {
 } from "../../../../utils/timeFormatter";
 import DatePicker from "../../../../components/form/date-picker";
 import AttendanceDetailDialog from "../AttendanceDetailDialog";
-import { ScanSearch } from "lucide-react";
+import { ScanSearch, Search } from "lucide-react";
 
 interface Attendance {
   id: string;
@@ -99,19 +99,22 @@ export default function DailyAttendanceTab() {
   const totalPages = Math.ceil(total / pageSize);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Filters */}
       <div className="flex flex-wrap gap-4 items-center">
-        <input
-          type="text"
-          placeholder="Cari karyawan..."
-          className="border rounded-lg px-3 py-2 text-sm"
-          value={search}
-          onChange={(e) => {
-            setPage(1);
-            setSearch(e.target.value);
-          }}
-        />
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Cari karyawan..."
+            className="input-field pl-10 w-64"
+            value={search}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
+          />
+        </div>
 
         <DatePicker
           id="attendance-date"
@@ -130,7 +133,7 @@ export default function DailyAttendanceTab() {
         />
 
         <select
-          className="border rounded-lg px-3 py-2 text-sm"
+          className="select-field w-auto"
           value={pageSize}
           onChange={(e) => {
             setPage(1);
@@ -144,62 +147,67 @@ export default function DailyAttendanceTab() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto border rounded-xl">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-left">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+        <table className="premium-table">
+          <thead>
             <tr>
-              <th className="px-4 py-3">Tanggal</th>
-              <th className="px-4 py-3">Karyawan</th>
-              <th className="px-4 py-3">Jam Masuk</th>
-              <th className="px-4 py-3">Jam Pulang</th>
-              <th className="px-4 py-3">Durasi</th>
-              <th className="px-4 py-3">Detail</th>
+              <th>Tanggal</th>
+              <th>Karyawan</th>
+              <th>Jam Masuk</th>
+              <th>Jam Pulang</th>
+              <th>Durasi</th>
+              <th>Detail</th>
             </tr>
           </thead>
 
           <tbody>
             {loading && (
               <tr>
-                <td colSpan={7} className="text-center py-6">
-                  Loading...
+                <td colSpan={6} className="text-center py-8">
+                  <div className="flex items-center justify-center gap-2 text-gray-400">
+                    <div className="w-5 h-5 border-2 border-gray-300 border-t-brand-500 rounded-full animate-spin" />
+                    Memuat data...
+                  </div>
                 </td>
               </tr>
             )}
 
             {!loading && data.length === 0 && (
               <tr>
-                <td colSpan={7} className="text-center py-6">
+                <td colSpan={6} className="text-center py-8 text-gray-400 dark:text-gray-500">
                   Tidak ada data absensi
                 </td>
               </tr>
             )}
 
             {data.map((item) => (
-              <tr key={item.id} className="border-t">
-                <td className="px-4 py-3">
+              <tr key={item.id}>
+                <td>
                   {formatDate(item.attendance_date)}
                 </td>
 
-                <td className="px-4 py-3">
-                  {item.employees?.full_name || "-"}
+                <td className="font-medium">
+                  {item.employees?.full_name || "—"}
                 </td>
 
-                <td className="px-4 py-3">{formatTime(item.check_in)}</td>
+                <td>{formatTime(item.check_in)}</td>
 
-                <td className="px-4 py-3">{formatTime(item.check_out)}</td>
+                <td>{formatTime(item.check_out)}</td>
 
-                <td className="px-4 py-3">
+                <td>
                   {formatMinutes(item.work_minutes)}
                 </td>
 
-                <td className="px-4 py-3 capitalize">
+                <td>
                   <button
                     onClick={() => {
                       setSelectedId(item.id);
                       setOpen(true);
                     }}
-                    className="text-blue-600">
-                    <ScanSearch />
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-brand-50 text-brand-600 hover:bg-brand-100 dark:bg-brand-500/15 dark:text-brand-400 dark:hover:bg-brand-500/25 transition-colors"
+                    title="Lihat Detail"
+                  >
+                    <ScanSearch className="w-4 h-4" />
                   </button>
                 </td>
               </tr>
@@ -210,8 +218,8 @@ export default function DailyAttendanceTab() {
 
       {/* Pagination */}
       <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-500">
-          Showing {(page - 1) * pageSize + 1} -
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          Showing {Math.min((page - 1) * pageSize + 1, total)} –{" "}
           {Math.min(page * pageSize, total)} of {total}
         </div>
 
@@ -219,18 +227,18 @@ export default function DailyAttendanceTab() {
           <button
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
-            className="px-3 py-1 border rounded">
+            className="pagination-btn">
             Prev
           </button>
 
-          <span className="px-2 text-sm">
+          <span className="pagination-btn pagination-btn-active">
             {page} / {totalPages || 1}
           </span>
 
           <button
-            disabled={page === totalPages}
+            disabled={page === totalPages || totalPages === 0}
             onClick={() => setPage(page + 1)}
-            className="px-3 py-1 border rounded">
+            className="pagination-btn">
             Next
           </button>
         </div>

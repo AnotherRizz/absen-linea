@@ -6,48 +6,58 @@ import LeaveRequestsTab from "./tabs/LeaveRequestsTab";
 import LeaveQuotaTab from "./tabs/LeaveQuotaTab";
 import LeaveTypesTab from "./tabs/LeaveTypesTab";
 
+type TabType = "requests" | "quota" | "types";
 
 export default function LeaveManagementPage() {
-  const [activeTab, setActiveTab] = useState("requests");
-
+  const [activeTab, setActiveTab] = useState<TabType>("requests");
 
   const tabs = [
-    { id: "requests", label: "Pengajuan Izin/Cuti" },
-    { id: "quota", label: "Kuota Karyawan" },
-    { id: "types", label: "Jenis Cuti" },
+    { id: "requests" as TabType, label: "Pengajuan Cuti" },
+    { id: "quota" as TabType, label: "Kuota Cuti" },
+    { id: "types" as TabType, label: "Jenis Cuti" },
   ];
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "requests":
+        return <LeaveRequestsTab />;
+      case "quota":
+        return <LeaveQuotaTab />;
+      case "types":
+        return <LeaveTypesTab />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div>
-      <PageMeta title="Manajemen Izin & Cuti" description="Manajemen Izin & Cuti " />
+      <PageMeta
+        title="Manajemen Izin & Cuti | HRIS"
+        description="Leave management page"
+      />
+
       <PageBreadcrumb pageTitle="Manajemen Izin & Cuti" />
 
-      <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
-
+      <div className="premium-card dark:border-gray-800 dark:bg-gray-900 xl:px-10 xl:py-10">
         {/* Tabs */}
-        <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-          <nav className="flex gap-6">
+        <div className="border-b border-gray-200 dark:border-gray-800 mb-8">
+          <nav className="flex gap-8">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`pb-3 text-sm font-medium border-b-2 transition ${
-                  activeTab === tab.id
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                    : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400"
-                }`}
-              >
+                className={`tab-btn ${
+                  activeTab === tab.id ? "tab-btn-active" : ""
+                }`}>
                 {tab.label}
               </button>
             ))}
           </nav>
         </div>
 
-        {/* Tab Render */}
-        {activeTab === "requests" && <LeaveRequestsTab />}
-        {activeTab === "quota" && <LeaveQuotaTab />}
-        {activeTab === "types" && <LeaveTypesTab />}
-
+        {/* Tab Content */}
+        {renderContent()}
       </div>
     </div>
   );

@@ -2,12 +2,12 @@ import AttendanceContainer from "./AttendanceContainer";
 
 export default function AttendanceDialog({ type, onClose }: any) {
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-999">
-      <div className="bg-white rounded-3xl w-full max-w-md p-6 relative">
+    <div className="dialog-backdrop">
+      <div className="dialog-content w-full max-w-md p-6 relative">
 
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
         >
           ✕
         </button>

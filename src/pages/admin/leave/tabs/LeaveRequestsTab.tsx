@@ -4,6 +4,7 @@ import { useDialog } from "../../../../components/ui/AppDialog";
 import EmployeeSearchSelect from "../../../../components/common/EmployeeSearchSelect";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../../../utils/timeFormatter";
+import { Search, Plus, ChevronRight, X } from "lucide-react";
 
 type LeaveRequest = {
   id: string;
@@ -81,7 +82,6 @@ export default function LeaveRequestsTab() {
       .from("employees")
       .select("id,full_name")
       .order("full_name");
-    console.log(data);
 
     setEmployees(data || []);
   }
@@ -145,16 +145,16 @@ export default function LeaveRequestsTab() {
   const filtered = requests.filter((r) =>
     r.employees?.full_name?.toLowerCase().includes(search.toLowerCase()),
   );
+
   function StatusBadge({ status }: { status: string }) {
     const map: any = {
-      pending: "bg-yellow-100 text-yellow-700",
-      approved: "bg-green-100 text-green-700",
-      rejected: "bg-red-100 text-red-700",
+      pending: "badge-warning",
+      approved: "badge-success",
+      rejected: "badge-danger",
     };
 
     return (
-      <span
-        className={`px-2 py-1 text-xs rounded-full font-medium ${map[status] || "bg-gray-100 text-gray-600"}`}>
+      <span className={`badge ${map[status] || "badge-neutral"}`}>
         {status === "pending" && "Menunggu Persetujuan"}
         {status === "approved" && "Disetujui"}
         {status === "rejected" && "Ditolak"}
@@ -163,87 +163,86 @@ export default function LeaveRequestsTab() {
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <h3 className="section-title">
           Pengajuan Cuti
         </h3>
 
         <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Cari karyawan..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
-          />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari karyawan..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input-field pl-10 w-64"
+            />
+          </div>
 
           <button
             onClick={openCreate}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
-            + Ajukan Cuti
+            className="btn-primary">
+            <Plus className="w-4 h-4" />
+            Ajukan Cuti
           </button>
         </div>
       </div>
 
       {/* Table Desktop */}
-      <div className=" overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="border-b dark:border-gray-700 text-gray-500">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+        <table className="premium-table">
+          <thead>
             <tr>
-              <th className="py-3 text-left">Karyawan</th>
-              <th className="text-left">Jenis Cuti</th>
-              <th className="text-left">Tanggal Mulai</th>
-              <th className="text-left">Tanggal Selesai</th>
-              <th className="text-left">Total</th>
-              <th className="text-left">Status</th>
+              <th>Karyawan</th>
+              <th>Jenis Cuti</th>
+              <th>Tanggal Mulai</th>
+              <th>Tanggal Selesai</th>
+              <th>Total</th>
+              <th>Status</th>
               <th className="text-right">Aksi</th>
             </tr>
           </thead>
 
           <tbody>
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={7} className="text-center py-8 text-gray-400 dark:text-gray-500">
+                  Tidak ada data pengajuan cuti
+                </td>
+              </tr>
+            )}
             {filtered.map((r) => (
               <tr
                 key={r.id}
                 onClick={() =>
                   navigate(`/leave-management/leave-request/${r.id}`)
                 }
-                className="border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer">
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
+                className="cursor-pointer">
+                <td className="font-medium">
                   {r.employees?.full_name}
                 </td>
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
+                <td>
                   {r.leave_types?.name}
                 </td>
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
+                <td>
                   {formatDate(r.start_date)}
                 </td>
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
+                <td>
                   {formatDate(r.end_date)}
                 </td>
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
+                <td>
                   {r.total_days} hari
                 </td>
 
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
+                <td>
                   <StatusBadge status={r.status} />
                 </td>
 
-                <td className="text-right ">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="size-6">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                    />
-                  </svg>
+                <td className="text-right">
+                  <ChevronRight className="w-5 h-5 text-gray-400 ml-auto" />
                 </td>
               </tr>
             ))}
@@ -253,14 +252,21 @@ export default function LeaveRequestsTab() {
 
       {/* Dialog Form */}
       {openDialog && (
-        <div className="fixed inset-0 flex max-h-screen items-center justify-center bg-black/40 z-999">
-          <div className="bg-white rounded-xl p-6 w-full max-w-3xl space-y-4">
-            <h4 className="text-lg font-semibold">
-              {editing ? "Edit Pengajuan Cuti" : "Ajukan Cuti"}
-            </h4>
-            <div className=" grid grid-cols-1 md:grid-cols-2 md:gap-4">
-              <div>
-                <label className="text-sm font-medium">Karyawan</label>
+        <div className="dialog-backdrop">
+          <div className="dialog-content p-8 w-full max-w-3xl space-y-6">
+            <div className="flex justify-between items-center">
+              <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                {editing ? "Edit Pengajuan Cuti" : "Ajukan Cuti"}
+              </h4>
+              <button
+                onClick={() => setOpenDialog(false)}
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Karyawan</label>
 
                 <EmployeeSearchSelect
                   employees={employees}
@@ -269,14 +275,14 @@ export default function LeaveRequestsTab() {
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium">Jenis Cuti</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Jenis Cuti</label>
                 <select
                   value={form.leave_type_id}
                   onChange={(e) =>
                     setForm({ ...form, leave_type_id: e.target.value })
                   }
-                  className="w-full border rounded-lg px-3 py-2 mt-1">
+                  className="select-field">
                   <option value="">Pilih Jenis Cuti</option>
                   {leaveTypes.map((t) => (
                     <option key={t.id} value={t.id}>
@@ -286,48 +292,48 @@ export default function LeaveRequestsTab() {
                 </select>
               </div>
 
-              <div>
-                <label className="text-sm font-medium">Tanggal Mulai</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Tanggal Mulai</label>
                 <input
                   type="date"
                   value={form.start_date}
                   onChange={(e) =>
                     setForm({ ...form, start_date: e.target.value })
                   }
-                  className="w-full border rounded-lg px-3 py-2 mt-1"
+                  className="input-field"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium">Tanggal Selesai</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Tanggal Selesai</label>
                 <input
                   type="date"
                   value={form.end_date}
                   onChange={(e) =>
                     setForm({ ...form, end_date: e.target.value })
                   }
-                  className="w-full border rounded-lg px-3 py-2 mt-1"
+                  className="input-field"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium">Total Hari</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Total Hari</label>
                 <input
                   type="number"
                   value={form.total_days}
                   onChange={(e) =>
                     setForm({ ...form, total_days: Number(e.target.value) })
                   }
-                  className="w-full border rounded-lg px-3 py-2 mt-1"
+                  className="input-field"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium">Keterangan</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Keterangan</label>
                 <textarea
                   value={form.reason}
                   onChange={(e) => setForm({ ...form, reason: e.target.value })}
-                  className="w-full border rounded-lg px-3 py-2 mt-1"
+                  className="input-field"
                 />
               </div>
             </div>
@@ -335,13 +341,13 @@ export default function LeaveRequestsTab() {
             <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setOpenDialog(false)}
-                className="border px-4 py-2 rounded-lg">
+                className="btn-secondary">
                 Batal
               </button>
 
               <button
                 onClick={saveRequest}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                className="btn-primary">
                 Simpan
               </button>
             </div>

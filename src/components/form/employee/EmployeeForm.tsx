@@ -135,14 +135,18 @@ export default function EmployeeForm({
       </div>
 
       <div>
-        <label>NIK (KTP)</label>
+        <label>NIK (KTP) *</label>
         <input
           name="national_id"
           value={form.national_id}
           onChange={handleChange}
           className={inputClass}
+          pattern="\d{16}"
+          maxLength={16}
+          title="NIK harus 16 digit angka"
+          placeholder="Contoh: 3201234567890001"
         />
-        <p className={helperClass}>Nomor Induk Kependudukan sesuai KTP.</p>
+        <p className={helperClass}>Nomor Induk Kependudukan 16 digit sesuai KTP.</p>
       </div>
 
       <div>
@@ -174,13 +178,18 @@ export default function EmployeeForm({
       </div>
 
       <div>
-        <label>Nomor Telepon</label>
+        <label>Nomor Telepon *</label>
         <input
           name="phone"
           required
           value={form.phone}
           onChange={handleChange}
           className={inputClass}
+          pattern="[0-9+\-\s]{10,15}"
+          minLength={10}
+          maxLength={15}
+          title="Nomor telepon minimal 10 digit"
+          placeholder="Contoh: 08123456789"
         />
       </div>
 
@@ -241,6 +250,10 @@ export default function EmployeeForm({
           value={form.postal_code}
           onChange={handleChange}
           className={inputClass}
+          pattern="\d{5}"
+          maxLength={5}
+          title="Kode pos harus 5 digit angka"
+          placeholder="Contoh: 12345"
         />
       </div>
 
@@ -352,13 +365,15 @@ export default function EmployeeForm({
       </div>
 
       <div>
-        <label>Gaji Pokok</label>
+        <label>Gaji Pokok *</label>
         <input
           type="number"
           name="basic_salary"
           value={form.basic_salary}
           onChange={handleChange}
           className={inputClass}
+          min="0"
+          required
         />
         <p className={helperClass}>
           Gaji tetap per bulan sebelum tunjangan dan potongan.
@@ -373,6 +388,7 @@ export default function EmployeeForm({
           value={form.daily_meal_allowance}
           onChange={handleChange}
           className={inputClass}
+          min="0"
         />
       </div>
 
@@ -384,6 +400,7 @@ export default function EmployeeForm({
           value={form.daily_fuel_allowance}
           onChange={handleChange}
           className={inputClass}
+          min="0"
         />
       </div>
 
@@ -395,6 +412,7 @@ export default function EmployeeForm({
           value={form.other_allowance}
           onChange={handleChange}
           className={inputClass}
+          min="0"
         />
       </div>
 

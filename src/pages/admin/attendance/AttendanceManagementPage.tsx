@@ -11,17 +11,20 @@ type TabType = "daily" | "report" | "calendar";
 export default function AttendanceManagementPage() {
   const [activeTab, setActiveTab] = useState<TabType>("daily");
 
+  const tabs = [
+    { id: "daily" as TabType, label: "Absensi Harian" },
+    { id: "report" as TabType, label: "Report Absensi" },
+    { id: "calendar" as TabType, label: "Kalender Absensi" },
+  ];
+
   const renderContent = () => {
     switch (activeTab) {
       case "daily":
         return <DailyAttendanceTab />;
-
       case "report":
         return <ReportAttendanceTab />;
-
       case "calendar":
         return <CalendarAttendanceTab />;
-
       default:
         return null;
     }
@@ -36,38 +39,20 @@ export default function AttendanceManagementPage() {
 
       <PageBreadcrumb pageTitle="Manajemen Absensi" />
 
-      <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 xl:px-10 xl:py-12">
+      <div className="premium-card dark:border-gray-800 dark:bg-gray-900 xl:px-10 xl:py-10">
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-6">
-          <nav className="flex gap-6">
-            <button
-              onClick={() => setActiveTab("daily")}
-              className={`pb-3 text-sm font-medium border-b-2 transition ${
-                activeTab === "daily"
-                  ? "border-brand-500 text-brand-500"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}>
-              Absensi Harian
-            </button>
-
-            <button
-              onClick={() => setActiveTab("report")}
-              className={`pb-3 text-sm font-medium border-b-2 transition ${
-                activeTab === "report"
-                  ? "border-brand-500 text-brand-500"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}>
-              Report Absensi
-            </button>
-            <button
-              onClick={() => setActiveTab("calendar")}
-              className={`pb-3 text-sm font-medium border-b-2 transition ${
-                activeTab === "calendar"
-                  ? "border-brand-500 text-brand-500"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}>
-              Kalender Absensi
-            </button>
+        <div className="border-b border-gray-200 dark:border-gray-800 mb-8">
+          <nav className="flex gap-8">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`tab-btn ${
+                  activeTab === tab.id ? "tab-btn-active" : ""
+                }`}>
+                {tab.label}
+              </button>
+            ))}
           </nav>
         </div>
 

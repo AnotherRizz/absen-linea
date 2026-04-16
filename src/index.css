@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap")
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap")
 layer(base);
 
 @import "tailwindcss";
@@ -7,7 +7,7 @@ layer(base);
 
 @theme {
   --font-*: initial;
-  --font-outfit: Outfit, sans-serif;
+  --font-outfit: Poppins, sans-serif;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
@@ -869,4 +869,213 @@ span.flatpickr-weekday,
 
 .simplebar-scrollbar.simplebar-visible:before {
   @apply opacity-100;
+}
+
+/* ===== DESIGN SYSTEM UTILITIES ===== */
+
+/* --- Premium Card --- */
+@utility premium-card {
+  @apply rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300;
+  @apply dark:border-gray-800 dark:bg-gray-900;
+}
+
+@utility premium-card-hover {
+  @apply hover:shadow-md hover:border-gray-300 dark:hover:border-gray-700;
+}
+
+/* --- Glassmorphism --- */
+@utility glass-card {
+  @apply rounded-2xl border border-white/20 bg-white/70 p-6 shadow-lg backdrop-blur-xl;
+  @apply dark:border-white/10 dark:bg-gray-900/70;
+}
+
+/* --- Tables --- */
+@utility premium-table {
+  @apply w-full text-sm text-left;
+}
+
+.premium-table thead {
+  @apply bg-gray-50 dark:bg-gray-800/60;
+}
+
+.premium-table thead th {
+  @apply px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400;
+}
+
+.premium-table tbody tr {
+  @apply border-b border-gray-100 transition-colors duration-200;
+  @apply dark:border-gray-800;
+}
+
+.premium-table tbody tr:hover {
+  @apply bg-brand-25 dark:bg-white/[0.03];
+}
+
+.premium-table tbody td {
+  @apply px-5 py-4 text-gray-700 dark:text-gray-300;
+}
+
+/* --- Buttons --- */
+@utility btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm;
+  @apply transition-all duration-200 hover:bg-brand-600 hover:shadow-md hover:-translate-y-0.5;
+  @apply active:translate-y-0 active:shadow-sm;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-sm;
+}
+
+@utility btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm;
+  @apply transition-all duration-200 hover:bg-gray-50 hover:border-gray-400;
+  @apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+}
+
+@utility btn-success {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-success-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm;
+  @apply transition-all duration-200 hover:bg-success-600 hover:shadow-md hover:-translate-y-0.5;
+}
+
+@utility btn-danger {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-error-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm;
+  @apply transition-all duration-200 hover:bg-error-600 hover:shadow-md hover:-translate-y-0.5;
+}
+
+/* --- Form Inputs --- */
+@utility input-field {
+  @apply w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800;
+  @apply transition-all duration-200;
+  @apply placeholder:text-gray-400;
+  @apply focus:border-brand-400 focus:outline-none focus:ring-3 focus:ring-brand-500/10;
+  @apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:placeholder:text-gray-500;
+  @apply dark:focus:border-brand-500 dark:focus:ring-brand-500/20;
+}
+
+@utility select-field {
+  @apply w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 appearance-none;
+  @apply transition-all duration-200;
+  @apply focus:border-brand-400 focus:outline-none focus:ring-3 focus:ring-brand-500/10;
+  @apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200;
+}
+
+/* --- Status Badges --- */
+@utility badge {
+  @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold;
+}
+
+@utility badge-success {
+  @apply bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-400;
+}
+
+@utility badge-warning {
+  @apply bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-400;
+}
+
+@utility badge-danger {
+  @apply bg-error-50 text-error-700 dark:bg-error-500/15 dark:text-error-400;
+}
+
+@utility badge-info {
+  @apply bg-blue-light-50 text-blue-light-700 dark:bg-blue-light-500/15 dark:text-blue-light-400;
+}
+
+@utility badge-neutral {
+  @apply bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400;
+}
+
+/* --- Pagination --- */
+@utility pagination-btn {
+  @apply inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700;
+  @apply transition-all duration-200 hover:bg-gray-50 hover:border-gray-300;
+  @apply disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white;
+  @apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+}
+
+@utility pagination-btn-active {
+  @apply border-brand-500 bg-brand-50 text-brand-600;
+  @apply dark:border-brand-500 dark:bg-brand-500/15 dark:text-brand-400;
+}
+
+/* --- Dialog / Modal Animations --- */
+.dialog-backdrop {
+  @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-[999];
+  @apply flex items-center justify-center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dialog-content {
+  @apply bg-white dark:bg-gray-900 rounded-2xl shadow-2xl;
+  animation: dialogSlideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialogSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* --- Tab Navigation --- */
+@utility tab-btn {
+  @apply relative pb-3 text-sm font-medium transition-colors duration-200;
+  @apply text-gray-500 hover:text-gray-700;
+  @apply dark:text-gray-400 dark:hover:text-gray-200;
+}
+
+@utility tab-btn-active {
+  @apply text-brand-500 dark:text-brand-400;
+}
+
+.tab-btn-active::after {
+  content: '';
+  @apply absolute bottom-0 left-0 right-0 h-0.5 bg-brand-500 rounded-full;
+  animation: tabSlide 0.2s ease-out;
+}
+
+@keyframes tabSlide {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* --- Loading Skeleton --- */
+@utility skeleton {
+  @apply animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700;
+}
+
+/* --- Stat Card --- */
+@utility stat-card {
+  @apply relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 transition-all duration-300;
+  @apply hover:shadow-lg hover:border-gray-300 hover:-translate-y-0.5;
+  @apply dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700;
+}
+
+/* --- Section Header --- */
+@utility section-title {
+  @apply text-lg font-semibold text-gray-800 dark:text-gray-100;
+}
+
+@utility section-subtitle {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+/* --- Back Link --- */
+@utility back-link {
+  @apply inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors duration-200;
+  @apply hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-400;
+}
+
+/* --- Field Label (detail pages) --- */
+@utility field-label {
+  @apply text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500;
+}
+
+@utility field-value {
+  @apply mt-1 text-sm font-medium text-gray-800 dark:text-gray-200;
 }

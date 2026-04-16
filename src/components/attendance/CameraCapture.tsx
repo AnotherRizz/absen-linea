@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { AlertTriangle } from "lucide-react";
 
 export default function CameraCapture({ setPhoto, location }: any) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -6,6 +7,7 @@ export default function CameraCapture({ setPhoto, location }: any) {
   const streamRef = useRef<MediaStream | null>(null);
 
   const [preview, setPreview] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     startCamera();
@@ -16,6 +18,7 @@ export default function CameraCapture({ setPhoto, location }: any) {
   }, []);
 
   const startCamera = async () => {
+    setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
@@ -28,8 +31,14 @@ export default function CameraCapture({ setPhoto, location }: any) {
       }
 
       setPreview(true);
-    } catch {
-      alert("Kamera tidak dapat diakses");
+    } catch (err: any) {
+      if (err.name === "NotAllowedError") {
+        setError("Akses kamera ditolak. Silakan izinkan akses kamera di pengaturan browser Anda.");
+      } else if (err.name === "NotFoundError") {
+        setError("Kamera tidak ditemukan pada perangkat ini.");
+      } else {
+        setError("Kamera tidak dapat diakses. Pastikan tidak ada aplikasi lain yang menggunakan kamera.");
+      }
     }
   };
 
@@ -42,9 +51,11 @@ export default function CameraCapture({ setPhoto, location }: any) {
 
   const capture = () => {
     if (!location || !location.latitude || !location.longitude) {
-      alert("Lokasi belum terdeteksi");
+      setError("Lokasi belum terdeteksi. Pastikan GPS aktif dan izin lokasi diberikan.");
       return;
     }
+
+    setError(null);
 
     const canvas = canvasRef.current;
     const video = videoRef.current;
@@ -105,17 +116,26 @@ export default function CameraCapture({ setPhoto, location }: any) {
   return (
     <div className="space-y-4">
 
+      {error && (
+        <div className="flex items-start gap-2 px-4 py-3 rounded-xl bg-error-50 dark:bg-error-500/10 border border-error-200 dark:border-error-500/20">
+          <AlertTriangle className="w-4 h-4 text-error-500 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-error-700 dark:text-error-400">{error}</p>
+        </div>
+      )}
+
       {preview ? (
         <video
           ref={videoRef}
           autoPlay
-          className="rounded-md w-full"
+          className="rounded-2xl w-full border border-gray-200 dark:border-gray-700"
           style={{ transform: "scaleX(-1)" }}
         />
       ) : (
-        <div className="text-center p-6 bg-gray-100 rounded-md">
-          Kamera dimatikan
-        </div>
+        !error && (
+          <div className="text-center p-6 bg-gray-100 dark:bg-gray-800 rounded-2xl text-gray-500 dark:text-gray-400">
+            Kamera dimatikan
+          </div>
+        )
       )}
 
       <canvas ref={canvasRef} className="hidden" />
@@ -124,16 +144,16 @@ export default function CameraCapture({ setPhoto, location }: any) {
         <button
           onClick={capture}
           disabled={!locationReady}
-          className="w-full bg-blue-600 text-white py-3 rounded-xl disabled:bg-gray-400"
+          className="btn-primary w-full py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {locationReady ? "Ambil Foto" : "Menunggu Lokasi..."}
+          {locationReady ? "📸 Ambil Foto" : "⏳ Menunggu Lokasi..."}
         </button>
       ) : (
         <button
           onClick={retry}
-          className="w-full bg-gray-800 text-white py-3 rounded-xl"
+          className="btn-secondary w-full py-3 rounded-xl"
         >
-          Ulangi Foto
+          🔄 Ulangi Foto
         </button>
       )}
 

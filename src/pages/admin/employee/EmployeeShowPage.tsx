@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../../../services/supabaseClient";
+import { ArrowLeft, User } from "lucide-react";
 
 export default function EmployeeShowPage() {
   const { id } = useParams();
@@ -42,61 +43,70 @@ export default function EmployeeShowPage() {
     }).format(value || 0);
   };
 
-  if (loading) return <div className="p-6">Memuat data...</div>;
-  if (!employee) return <div className="p-6">Data tidak ditemukan</div>;
+  if (loading) return (
+    <div className="p-6 flex items-center justify-center gap-2 text-gray-400">
+      <div className="w-5 h-5 border-2 border-gray-300 border-t-brand-500 rounded-full animate-spin" />
+      Memuat data...
+    </div>
+  );
+  if (!employee) return <div className="p-6 text-gray-500 dark:text-gray-400">Data tidak ditemukan</div>;
 
   const Field = ({ label, value }: any) => (
-    <div>
-      <p className="text-xs text-gray-500">{label}</p>
-      <p className="font-medium">{value || "-"}</p>
+    <div className="space-y-1">
+      <p className="field-label">{label}</p>
+      <p className="field-value">{value || "—"}</p>
     </div>
   );
 
-  const TabButton = ({ name, label }: any) => (
-    <button
-      onClick={() => setTab(name)}
-      className={`px-4 py-2 border-b-2 ${
-        tab === name
-          ? "border-blue-600 text-blue-600 font-semibold"
-          : "border-transparent text-gray-500"
-      }`}
-    >
-      {label}
-    </button>
-  );
+  const tabs = [
+    { id: "personal", label: "Informasi Personal" },
+    { id: "job", label: "Informasi Pekerjaan" },
+    { id: "salary", label: "Gaji & Tunjangan" },
+  ];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
+      <Link to="/employee-management" className="back-link">
+        <ArrowLeft className="w-4 h-4" />
+        Kembali Kehalaman Karyawan
+      </Link>
 
       {/* HEADER */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-semibold">
-            {employee.full_name}
-          </h2>
-          <p className="text-gray-500">
-            {employee.positions?.name || "-"} • {employee.divisions?.name || "-"}
-          </p>
+      <div className="premium-card dark:border-gray-800 dark:bg-gray-900">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-50 dark:bg-brand-500/15">
+            <User className="w-7 h-7 text-brand-500" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {employee.full_name}
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {employee.positions?.name || "—"} • {employee.divisions?.name || "—"}
+            </p>
+          </div>
         </div>
-
-        <Link
-        to="/employee-management"
-        className="text-sm text-gray-500 mb-4 inline-block">
-        ← Kembali Kehalaman Karyawan
-      </Link>
       </div>
 
       {/* TABS */}
-      <div className="flex border-b gap-6">
-        <TabButton name="personal" label="Informasi Personal" />
-        <TabButton name="job" label="Informasi Pekerjaan" />
-        <TabButton name="salary" label="Gaji & Tunjangan" />
+      <div className="border-b border-gray-200 dark:border-gray-800">
+        <nav className="flex gap-8">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`tab-btn ${tab === t.id ? "tab-btn-active" : ""}`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
       </div>
 
       {/* TAB CONTENT */}
 
       {tab === "personal" && (
-        <div className="bg-white border rounded-xl p-6 grid grid-cols-3 gap-6">
+        <div className="premium-card dark:border-gray-800 dark:bg-gray-900 grid grid-cols-1 md:grid-cols-3 gap-6">
 
           <Field label="Kode Karyawan" value={employee.employee_code} />
           <Field label="Nama Lengkap" value={employee.full_name} />
@@ -123,7 +133,7 @@ export default function EmployeeShowPage() {
       )}
 
       {tab === "job" && (
-        <div className="bg-white border rounded-xl p-6 grid grid-cols-3 gap-6">
+        <div className="premium-card dark:border-gray-800 dark:bg-gray-900 grid grid-cols-1 md:grid-cols-3 gap-6">
 
           <Field label="Divisi" value={employee.divisions?.name} />
           <Field label="Jabatan" value={employee.positions?.name} />
@@ -144,7 +154,7 @@ export default function EmployeeShowPage() {
       )}
 
       {tab === "salary" && (
-        <div className="bg-white border rounded-xl p-6 grid grid-cols-3 gap-6">
+        <div className="premium-card dark:border-gray-800 dark:bg-gray-900 grid grid-cols-1 md:grid-cols-3 gap-6">
 
           <Field
             label="Gaji Pokok"

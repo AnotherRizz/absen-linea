@@ -7,6 +7,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import { useAuth } from "../../context/AuthContext";
 import DatePicker from "../../components/form/date-picker";
+import { ArrowLeft, CalendarDays, Upload } from "lucide-react";
 
 export default function LeaveRequestFormPage() {
   const navigate = useNavigate();
@@ -113,16 +114,42 @@ const employeeId = user?.employeeId;
   }
 
   async function submit() {
-    const leaveType = leaveTypes.find((l) => l.id === form.leave_type_id);
-
-    if (!leaveType) {
+    if (!form.leave_type_id) {
       showDialog("Jenis cuti wajib dipilih", "warning");
       return;
     }
 
-    if (leaveType.reduce_quota && form.total_days > quota.remaining_days) {
-      showDialog("Sisa kuota cuti tidak mencukupi", "error");
+    if (!form.start_date || !form.end_date) {
+      showDialog("Tanggal mulai dan selesai wajib diisi", "warning");
       return;
+    }
+
+    if (form.total_days <= 0) {
+      showDialog("Tanggal tidak valid. Tanggal selesai harus setelah tanggal mulai.", "warning");
+      return;
+    }
+
+    if (!form.reason || form.reason.trim() === "") {
+      showDialog("Keterangan / alasan wajib diisi", "warning");
+      return;
+    }
+
+    const leaveType = leaveTypes.find((l) => l.id === form.leave_type_id);
+
+    if (!leaveType) {
+      showDialog("Jenis cuti tidak valid", "warning");
+      return;
+    }
+
+    if (leaveType.reduce_quota) {
+      if (!quota) {
+        showDialog("Data kuota cuti belum tersedia. Hubungi admin.", "error");
+        return;
+      }
+      if (form.total_days > (quota.remaining_days || 0)) {
+        showDialog(`Sisa kuota cuti tidak mencukupi. Sisa: ${quota.remaining_days || 0} hari, diajukan: ${form.total_days} hari.`, "error");
+        return;
+      }
     }
 
     const attachment = await uploadFile();
@@ -133,7 +160,7 @@ const employeeId = user?.employeeId;
       start_date: form.start_date,
       end_date: form.end_date,
       total_days: form.total_days,
-      reason: form.reason,
+      reason: form.reason.trim(),
       attachment_url: attachment,
       status: "pending",
     });
@@ -149,7 +176,6 @@ const employeeId = user?.employeeId;
   }
 
   const leaveType = leaveTypes.find((l) => l.id === form.leave_type_id);
-  //   const today = new Date().toISOString().split("T")[0];
 
   return (
     <div>
@@ -157,36 +183,36 @@ const employeeId = user?.employeeId;
 
       <PageBreadcrumb pageTitle="Ajukan Izin / Cuti" />
 
-      <div className="max-w-5xl mx-auto bg-white rounded-2xl border p-6 space-y-6">
+      <div className="max-w-5xl mx-auto premium-card dark:border-gray-800 dark:bg-gray-900 space-y-8">
         {/* Kuota */}
         <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="border rounded-lg p-3">
-            <p className="text-sm text-gray-500">Total</p>
-            <p className="font-semibold">{quota?.total_days || 0}</p>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/50">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Total</p>
+            <p className="font-bold text-gray-800 dark:text-gray-200 text-xl mt-1">{quota?.total_days || 0}</p>
           </div>
 
-          <div className="border rounded-lg p-3">
-            <p className="text-sm text-gray-500">Digunakan</p>
-            <p className="font-semibold text-orange-500">
+          <div className="rounded-xl border border-warning-200 dark:border-warning-500/30 p-4 bg-warning-50 dark:bg-warning-500/10">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Digunakan</p>
+            <p className="font-bold text-warning-600 dark:text-warning-400 text-xl mt-1">
               {quota?.used_days || 0}
             </p>
           </div>
 
-          <div className="border rounded-lg p-3">
-            <p className="text-sm text-gray-500">Sisa</p>
-            <p className="font-semibold text-green-600">
+          <div className="rounded-xl border border-success-200 dark:border-success-500/30 p-4 bg-success-50 dark:bg-success-500/10">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Sisa</p>
+            <p className="font-bold text-success-600 dark:text-success-400 text-xl mt-1">
               {quota?.remaining_days || 0}
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Jenis Cuti */}
-          <div>
-            <label className="text-sm font-medium">Jenis Izin / Cuti</label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Jenis Izin / Cuti</label>
 
             <select
-              className="w-full border rounded-lg px-3 py-2 mt-1"
+              className="select-field"
               value={form.leave_type_id}
               onChange={(e) =>
                 setForm({ ...form, leave_type_id: e.target.value })
@@ -201,7 +227,7 @@ const employeeId = user?.employeeId;
             </select>
 
             {leaveType && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {leaveType.reduce_quota
                   ? "Pengajuan ini akan mengurangi kuota cuti"
                   : "Pengajuan ini tidak mengurangi kuota cuti"}
@@ -210,8 +236,8 @@ const employeeId = user?.employeeId;
           </div>
 
           {/* Tanggal */}
-          <div>
-            <label className="text-sm font-medium">Pilih Tanggal Cuti</label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Pilih Tanggal Cuti</label>
 
             <DatePicker
               id="leave-date"
@@ -246,83 +272,74 @@ const employeeId = user?.employeeId;
           </div>
 
           {/* Total Hari */}
-          <div className="">
-            <label className="text-sm font-medium">Total Hari</label>
-            <p className="border rounded-lg p-2 text-sm">
-              {form.total_days} Hari
-            </p>
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Total Hari</label>
+            <div className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-4 py-2.5">
+              <CalendarDays className="w-4 h-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                {form.total_days} Hari
+              </span>
+            </div>
           </div>
 
           {/* Lampiran */}
-          <div>
-            <div className="mt-2">
-              <label className="text-sm font-medium">
-                Lampiran (PDF / Gambar)
-              </label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Lampiran (PDF / Gambar)
+            </label>
 
-              <label
-                htmlFor="file-upload"
-                className="mt-2 flex items-center justify-center gap-2 border border-dashed border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-600 cursor-pointer hover:bg-gray-50 transition">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5 text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 4v12m0 0l4-4m-4 4l-4-4"
-                  />
-                </svg>
+            <label
+              htmlFor="file-upload"
+              className="mt-1 flex items-center justify-center gap-2.5 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl px-4 py-4 text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:border-brand-400 transition-all duration-200">
+              <Upload className="w-5 h-5 text-gray-400" />
+              <span>Pilih file atau drag & drop</span>
+            </label>
 
-                <span>Pilih file atau drag & drop</span>
-              </label>
-
-              <input
-                id="file-upload"
-                type="file"
-                accept="image/*,.pdf"
-                onChange={handleFile}
-                className="hidden"
-              />
-            </div>
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/*,.pdf"
+              onChange={handleFile}
+              className="hidden"
+            />
 
             {preview && (
-              <img src={preview} className="mt-3 w-32 rounded-lg border" />
+              <img src={preview} className="mt-3 w-32 rounded-xl border dark:border-gray-700" />
             )}
 
             {file && file.type === "application/pdf" && (
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                 File PDF dipilih: {file.name}
               </p>
             )}
           </div>
 
           {/* Keterangan */}
-          <div>
-            <label className="text-sm font-medium">Keterangan</label>
+          <div className="space-y-1.5 md:col-span-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Keterangan</label>
 
             <textarea
-              className="w-full border rounded-lg px-3 py-2 mt-1"
+              className="input-field"
               rows={3}
+              placeholder="Tuliskan alasan cuti... (wajib diisi)"
               value={form.reason}
               onChange={(e) => setForm({ ...form, reason: e.target.value })}
+              required
             />
           </div>
         </div>
         {/* Submit */}
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end gap-3 pt-2">
           <button
             onClick={() => navigate("/leave")}
-            className="px-4 py-2 border rounded-lg">
+            className="btn-secondary">
+            <ArrowLeft className="w-4 h-4" />
             Batal
           </button>
 
           <button
             onClick={submit}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+            className="btn-primary">
             Ajukan
           </button>
         </div>

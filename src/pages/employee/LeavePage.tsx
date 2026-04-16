@@ -6,12 +6,13 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import { useAuth } from "../../context/AuthContext";
 import { generateLeaveRequestPdf } from "../../utils/generateLeaveRequestPdf";
+import { CalendarDays, CheckCircle, Clock, Plus, Printer } from "lucide-react";
 
 function StatusBadge({ status }: { status: string }) {
   const styles: any = {
-    pending: "bg-yellow-100 text-yellow-700",
-    approved: "bg-green-100 text-green-700",
-    rejected: "bg-red-100 text-red-700",
+    pending: "badge-warning",
+    approved: "badge-success",
+    rejected: "badge-danger",
   };
 
   const label: any = {
@@ -21,7 +22,7 @@ function StatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`px-2 py-1 text-xs rounded-full ${styles[status]}`}>
+    <span className={`badge ${styles[status]}`}>
       {label[status]}
     </span>
   );
@@ -81,34 +82,55 @@ const employeeId = user?.employeeId;
 
       <PageBreadcrumb pageTitle="Pengajuan Izin & Cuti" />
 
-      <div className="min-h-screen rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-colors px-5 py-7 xl:px-10 xl:py-12 space-y-8">
+      <div className="premium-card dark:border-gray-800 dark:bg-gray-900 space-y-8">
         {/* Ringkasan Kuota */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="rounded-xl p-5 bg-blue-50 dark:bg-blue-900/30 transition-colors">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Total Kuota Cuti
-            </p>
-            <p className="text-2xl font-semibold text-blue-700 dark:text-blue-300">
-              {quota?.total_days ?? 0} Hari
-            </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="stat-card !p-5 group">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-brand-50 dark:bg-brand-500/15 transition-transform duration-300 group-hover:scale-110">
+                <CalendarDays className="text-brand-500 w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  Total Kuota Cuti
+                </p>
+                <p className="text-2xl font-bold text-brand-600 dark:text-brand-400">
+                  {quota?.total_days ?? 0} <span className="text-sm font-medium">Hari</span>
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="rounded-xl p-5 bg-orange-50 dark:bg-orange-900/30 transition-colors">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Sudah Digunakan
-            </p>
-            <p className="text-2xl font-semibold text-orange-600 dark:text-orange-300">
-              {quota?.used_days ?? 0} Hari
-            </p>
+          <div className="stat-card !p-5 group">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-warning-50 dark:bg-warning-500/15 transition-transform duration-300 group-hover:scale-110">
+                <Clock className="text-warning-500 w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  Sudah Digunakan
+                </p>
+                <p className="text-2xl font-bold text-warning-600 dark:text-warning-400">
+                  {quota?.used_days ?? 0} <span className="text-sm font-medium">Hari</span>
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="rounded-xl p-5 bg-emerald-50 dark:bg-emerald-900/30 transition-colors">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Sisa Kuota
-            </p>
-            <p className="text-2xl font-semibold text-emerald-700 dark:text-emerald-300">
-              {quota?.remaining_days ?? 0} Hari
-            </p>
+          <div className="stat-card !p-5 group">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-success-50 dark:bg-success-500/15 transition-transform duration-300 group-hover:scale-110">
+                <CheckCircle className="text-success-500 w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  Sisa Kuota
+                </p>
+                <p className="text-2xl font-bold text-success-600 dark:text-success-400">
+                  {quota?.remaining_days ?? 0} <span className="text-sm font-medium">Hari</span>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -116,56 +138,62 @@ const employeeId = user?.employeeId;
         <div className="flex justify-end">
           <button
             onClick={() => navigate("/leave/request")}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition text-white font-medium shadow-sm">
-            + Ajukan Izin / Cuti
+            className="btn-primary">
+            <Plus className="w-4 h-4" />
+            Ajukan Izin / Cuti
           </button>
         </div>
 
         {/* Riwayat Pengajuan */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+          <h3 className="section-title">
             Riwayat Pengajuan
           </h3>
 
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+            <table className="premium-table">
+              <thead>
                 <tr>
-                  <th className="py-3 px-4 text-left">Jenis</th>
-                  <th className="px-4 text-left">Tanggal Mulai</th>
-                  <th className="px-4 text-left">Tanggal Selesai</th>
-                  <th className="px-4 text-left">Total</th>
-                  <th className="px-4 text-left">Status</th>
-                  <th className="px-4 text-left"></th>
+                  <th>Jenis</th>
+                  <th>Tanggal Mulai</th>
+                  <th>Tanggal Selesai</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th></th>
                 </tr>
               </thead>
 
               <tbody>
+                {requests.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="text-center py-8 text-gray-400 dark:text-gray-500">
+                      Belum ada pengajuan cuti
+                    </td>
+                  </tr>
+                )}
                 {requests.map((r) => (
-                  <tr
-                    key={r.id}
-                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <td className="px-4 py-3 font-medium text-gray-700 dark:text-gray-200">
+                  <tr key={r.id}>
+                    <td className="font-medium">
                       {r.leave_types?.name}
                     </td>
 
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    <td>
                       {r.start_date}
                     </td>
 
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    <td>
                       {r.end_date}
                     </td>
 
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    <td>
                       {r.total_days} hari
                     </td>
 
-                    <td className="px-4 py-3">
+                    <td>
                       <StatusBadge status={r.status} />
                     </td>
-                    <td className="px-4 py-3">{r.status !== "pending" &&  <button
+                    <td>{r.status !== "pending" &&  <button
                         onClick={() =>
                           generateLeaveRequestPdf({
                             employee_name: r.employees?.full_name,
@@ -176,20 +204,9 @@ const employeeId = user?.employeeId;
                             reason: r.reason,
                           })
                         }
-                        className="text-sm px-3 py-1 rounded bg-gray-600 text-white hover:bg-gray-700">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          className="size-6">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z"
-                          />
-                        </svg>
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors text-xs font-medium">
+                        <Printer className="w-4 h-4" />
+                        Print
                       </button>}
                     
                     </td>
@@ -204,7 +221,7 @@ const employeeId = user?.employeeId;
             {requests.map((r) => (
               <div
                 key={r.id}
-                className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 space-y-3 transition-colors shadow-sm">
+                className="premium-card premium-card-hover !p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-gray-700 dark:text-gray-200">
                     {r.leave_types?.name}

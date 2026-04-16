@@ -11,19 +11,24 @@ export default function RealtimeClock() {
     return () => clearInterval(timer);
   }, []);
 
+  const timeStr = now.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Jakarta",
+  });
+
+  const [hours, minutes] = timeStr.split(".");
+
   return (
-    <div className="text-center space-y-2">
-      <h1 className="text-5xl font-bold text-gray-800 dark:text-gray-50">
-        {now.toLocaleTimeString("id-ID", {
-          hour: "2-digit",
-          minute: "2-digit",
-          // second: "2-digit",
-          hour12: false,
-          timeZone: "Asia/Jakarta",
-        })}
+    <div className="text-center space-y-3 py-4">
+      <h1 className="text-6xl font-bold tracking-tight text-gray-800 dark:text-gray-50">
+        <span>{hours}</span>
+        <span className="text-brand-500 animate-pulse mx-1">:</span>
+        <span>{minutes}</span>
       </h1>
 
-      <p className="text-gray-500 dark:text-gray-400 text-sm">
+      <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
         {now.toLocaleDateString("id-ID", {
           weekday: "long",
           day: "numeric",

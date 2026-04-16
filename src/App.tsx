@@ -25,6 +25,9 @@ import EmployeeImportPage from "./pages/admin/employee/EmployeeImportPage";
 import PayrollManagementPage from "./pages/admin/payroll/PayrollManagementPage";
 import PayrollDetailPage from "./pages/admin/payroll/PayrollDetailPage";
 import PayrollBatchDetailPage from "./pages/admin/payroll/PayrollBatchDetailPage";
+import DashboardAdmin from "./pages/admin/DashboardAdmin";
+import ReimbursementManagementPage from "./pages/admin/reimbursement/ReimbursementManagementPage";
+import ReimbursementPage from "./pages/employee/ReimbursementPage";
 export default function App() {
   return (
     <>
@@ -49,6 +52,7 @@ export default function App() {
             <Route path="/attendance" element={<AttendancePage />} />
             <Route path="/leave" element={<LeavePage />} />
             <Route path="/leave/request" element={<LeaveRequestFormPage />} />
+            <Route path="/reimbursement-employee" element={<ReimbursementPage />} />
 
 
             {/* admin page */}
@@ -57,7 +61,7 @@ export default function App() {
               path="/dashboard-admin"
               element={
                 <RoleGuard allowedRoles={["admin"]}>
-                  <Blank />
+                  <DashboardAdmin />
                 </RoleGuard>
               }
             />
@@ -157,7 +161,7 @@ export default function App() {
               path="/reimbursement"
               element={
                 <RoleGuard allowedRoles={["admin"]}>
-                  <Blank />
+                  <ReimbursementManagementPage />
                 </RoleGuard>
               }
             />

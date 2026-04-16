@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../../services/supabaseClient";
 import Button from "../../../../components/ui/button/Button";
 import { Link } from "react-router";
-import { File } from "lucide-react";
+import { File, Eye, Pencil, Search } from "lucide-react";
 
 interface Employee {
   id: string;
@@ -76,23 +76,26 @@ export default function EmployeeTab() {
   const totalPages = Math.ceil(total / pageSize);
 
   return (
-    <div>
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <input
-          type="text"
-          placeholder="Cari Karyawan..."
-          className="border rounded px-3 py-2 text-sm w-64"
-          value={search}
-          onChange={(e) => {
-            setPage(1);
-            setSearch(e.target.value);
-          }}
-        />
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Cari Karyawan..."
+            className="input-field pl-10 w-72"
+            value={search}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
+          />
+        </div>
 
         <div className="flex gap-2 items-center">
           <select
-            className="border rounded px-2 py-2 text-sm"
+            className="select-field w-auto"
             value={pageSize}
             onChange={(e) => {
               setPage(1);
@@ -103,74 +106,65 @@ export default function EmployeeTab() {
             <option value={100}>100 baris</option>
           </select>
           <Link to="/employee-management/import">
-            <Button className=" bg-green-500 hover:bg-green-600"><File/> Upload Excel</Button>
+            <Button className="btn-success"><File className="w-4 h-4" /> Upload Excel</Button>
           </Link>
           <Link to="/employee-management/create">
-            <Button>Tambah Karyawan</Button>
+            <Button className="btn-primary">Tambah Karyawan</Button>
           </Link>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto border rounded-xl">
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-100 dark:bg-gray-800">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+        <table className="premium-table">
+          <thead>
             <tr>
-              <th className="px-4 py-3 text-left">Nama Karyawan</th>
-              <th className="px-4 py-3 text-left">Email</th>
-              <th className="px-4 py-3 text-left">Jabatan</th>
-              <th className="px-4 py-3 text-left">Aksi</th>
+              <th>Nama Karyawan</th>
+              <th>Email</th>
+              <th>Jabatan</th>
+              <th>Aksi</th>
             </tr>
           </thead>
 
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="text-center py-6">
-                  Loading...
+                <td colSpan={4} className="text-center py-8">
+                  <div className="flex items-center justify-center gap-2 text-gray-400">
+                    <div className="w-5 h-5 border-2 border-gray-300 border-t-brand-500 rounded-full animate-spin" />
+                    Memuat data...
+                  </div>
+                </td>
+              </tr>
+            ) : employees.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="text-center py-8 text-gray-400 dark:text-gray-500">
+                  Tidak ada data karyawan
                 </td>
               </tr>
             ) : (
               employees.map((emp) => (
-                <tr key={emp.id} className="border-t">
-                  <td className="px-4 py-3">{emp.full_name}</td>
-                  <td className="px-4 py-3">{emp.email || "-"}</td>
-                  <td className="px-4 py-3">{emp.positions?.name ?? "-"}</td>
-                  <td className="px-4 py-3 flex gap-2 items-center">
-                    <Link to={`/employee-management/${emp.id}`}>
-                      <p className=" text-green-600">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          className="size-6">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"
-                          />
-                        </svg>
-                      </p>
-                    </Link>
-                    <Link to={`/employee-management/edit/${emp.id}`}>
-                      <p className=" text-yellow-600">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          className="size-6">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                          />
-                        </svg>
-                      </p>
-                    </Link>
+                <tr key={emp.id}>
+                  <td className="font-medium">{emp.full_name}</td>
+                  <td>{emp.email || "—"}</td>
+                  <td>{emp.positions?.name ?? "—"}</td>
+                  <td>
+                    <div className="flex gap-2 items-center">
+                      <Link
+                        to={`/employee-management/${emp.id}`}
+                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-success-50 text-success-600 hover:bg-success-100 dark:bg-success-500/15 dark:text-success-400 dark:hover:bg-success-500/25 transition-colors"
+                        title="Lihat Detail"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        to={`/employee-management/edit/${emp.id}`}
+                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-warning-50 text-warning-600 hover:bg-warning-100 dark:bg-warning-500/15 dark:text-warning-400 dark:hover:bg-warning-500/25 transition-colors"
+                        title="Edit"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -180,9 +174,9 @@ export default function EmployeeTab() {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4 text-sm">
-        <span>
-          Showing {(page - 1) * pageSize + 1} -{" "}
+      <div className="flex justify-between items-center">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          Showing {Math.min((page - 1) * pageSize + 1, total)} –{" "}
           {Math.min(page * pageSize, total)} of {total}
         </span>
 
@@ -190,14 +184,18 @@ export default function EmployeeTab() {
           <button
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
-            className="px-3 py-1 border rounded">
+            className="pagination-btn">
             Prev
           </button>
 
+          <span className="pagination-btn pagination-btn-active">
+            {page} / {totalPages || 1}
+          </span>
+
           <button
-            disabled={page === totalPages}
+            disabled={page === totalPages || totalPages === 0}
             onClick={() => setPage(page + 1)}
-            className="px-3 py-1 border rounded">
+            className="pagination-btn">
             Next
           </button>
         </div>

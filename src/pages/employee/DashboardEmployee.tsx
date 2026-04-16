@@ -5,10 +5,10 @@ import { supabase } from "../../services/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
 import {
   FingerprintIcon,
-  Navigation,
   CalendarCheck,
   Plane,
   Fingerprint,
+  TrendingUp,
 } from "lucide-react";
 
 export default function DashboardEmployee() {
@@ -100,15 +100,19 @@ export default function DashboardEmployee() {
       <PageBreadcrumb pageTitle="Dashboard" />
 
       {/* HERO BANNER */}
-      <div className="mb-6 rounded-3xl md:max-h-56 overflow-hidden bg-gradient-to-r from-blue-900 via-indigo-950 to-black p-5 md:p-7 text-white shadow-lg">
-        <div className="grid gap-6 md:grid-cols-4 ">
+      <div className="mb-8 rounded-2xl overflow-hidden bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 p-6 md:p-8 text-white shadow-xl relative">
+        {/* Decorative circles */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-400/10 rounded-full translate-y-1/2 -translate-x-1/4 blur-2xl" />
+
+        <div className="grid gap-6 md:grid-cols-4 relative z-10">
           {/* LEFT CONTENT */}
-          <div className=" md:col-span-3 md:mt-10">
-            <h2 className="text-xl md:text-2xl font-semibold">
+          <div className="md:col-span-3 md:mt-6">
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
               Selamat Datang, {fullName} 👋
             </h2>
 
-            <p className="mt-1 text-sm text-blue-200">
+            <p className="mt-2 text-sm text-brand-200/80">
               Ringkasan aktivitas kerja Anda hari ini{" "}
               {new Date().toLocaleDateString("id-ID", {
                 weekday: "long",
@@ -118,39 +122,27 @@ export default function DashboardEmployee() {
               })}
             </p>
 
-            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <div>
-                <p className="text-xs text-blue-300">Status Presensi</p>
-                <p className="text-sm md:text-base font-semibold flex gap-2">
-                  <FingerprintIcon className="size-6" />
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+              <div className="rounded-xl bg-white/10 backdrop-blur-sm p-3 border border-white/10">
+                <p className="text-xs text-brand-200/70 font-medium">Status Presensi</p>
+                <p className="text-sm md:text-base font-semibold flex items-center gap-2 mt-1">
+                  <FingerprintIcon className="size-5" />
                   {statusToday}
                 </p>
               </div>
 
-              <div>
-                <p className="text-xs text-blue-300">Kehadiran Bulan Ini</p>
-                <p className="text-sm md:text-base font-semibold flex gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6.75 2.994v2.25m10.5-2.25v2.25m-14.252 13.5V7.491a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v11.251m-18 0a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5m-6.75-6h2.25m-9 2.25h4.5m.002-2.25h.005v.006H12v-.006Zm-.001 4.5h.006v.006h-.006v-.005Zm-2.25.001h.005v.006H9.75v-.006Zm-2.25 0h.005v.005h-.006v-.005Zm6.75-2.247h.005v.005h-.005v-.005Zm0 2.247h.006v.006h-.006v-.006Zm2.25-2.248h.006V15H16.5v-.005Z"
-                    />
-                  </svg>
+              <div className="rounded-xl bg-white/10 backdrop-blur-sm p-3 border border-white/10">
+                <p className="text-xs text-brand-200/70 font-medium">Kehadiran Bulan Ini</p>
+                <p className="text-sm md:text-base font-semibold flex items-center gap-2 mt-1">
+                  <TrendingUp className="size-5" />
                   {attendanceMonth} hari
                 </p>
               </div>
 
-              <div>
-                <p className="text-xs text-blue-300">Sisa Cuti</p>
-                <p className="text-sm md:text-base font-semibold flex gap-2">
-                  <Navigation />
+              <div className="rounded-xl bg-white/10 backdrop-blur-sm p-3 border border-white/10">
+                <p className="text-xs text-brand-200/70 font-medium">Sisa Cuti</p>
+                <p className="text-sm md:text-base font-semibold flex items-center gap-2 mt-1">
+                  <Plane className="size-5" />
                   {leaveBalance} hari
                 </p>
               </div>
@@ -162,57 +154,65 @@ export default function DashboardEmployee() {
             <img
               src="/images/brand/nura.png"
               alt="illustration"
-              className="h-28 hidden md:block md:w-72 md:h-72 md:-mt-10 object-contain"
+              className="h-28 hidden md:block md:w-72 md:h-72 md:-mt-10 object-contain drop-shadow-2xl"
             />
           </div>
         </div>
       </div>
 
       {/* STAT CARDS */}
-
       <div className="grid gap-6 md:grid-cols-3">
         {/* Kehadiran */}
-        <div className="flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm border border-gray-200">
-          <div>
-            <p className="text-sm text-gray-500">Kehadiran Bulan Ini</p>
-            <h3 className="mt-1 text-3xl font-semibold text-gray-900">
-              {attendanceMonth}
-            </h3>
-            <p className="text-xs text-gray-400">Total hari hadir</p>
-          </div>
+        <div className="stat-card group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-success-50 dark:bg-success-500/10 rounded-full -translate-y-1/2 translate-x-1/2 transition-transform duration-500 group-hover:scale-125" />
+          <div className="flex items-center justify-between relative">
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Kehadiran Bulan Ini</p>
+              <h3 className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
+                {attendanceMonth}
+              </h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Total hari hadir</p>
+            </div>
 
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-green-100">
-            <CalendarCheck className="text-green-600 w-6 h-6" />
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-success-50 dark:bg-success-500/15 transition-transform duration-300 group-hover:scale-110">
+              <CalendarCheck className="text-success-500 w-7 h-7" />
+            </div>
           </div>
         </div>
 
         {/* Sisa cuti */}
-        <div className="flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm border border-gray-200">
-          <div>
-            <p className="text-sm text-gray-500">Sisa Cuti</p>
-            <h3 className="mt-1 text-3xl font-semibold text-gray-900">
-              {leaveBalance}
-            </h3>
-            <p className="text-xs text-gray-400">Hari tersisa</p>
-          </div>
+        <div className="stat-card group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-warning-50 dark:bg-warning-500/10 rounded-full -translate-y-1/2 translate-x-1/2 transition-transform duration-500 group-hover:scale-125" />
+          <div className="flex items-center justify-between relative">
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Sisa Cuti</p>
+              <h3 className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
+                {leaveBalance}
+              </h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Hari tersisa</p>
+            </div>
 
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-orange-100">
-            <Plane className="text-orange-600 w-6 h-6" />
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-warning-50 dark:bg-warning-500/15 transition-transform duration-300 group-hover:scale-110">
+              <Plane className="text-warning-500 w-7 h-7" />
+            </div>
           </div>
         </div>
 
         {/* Status presensi */}
-        <div className="flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm border border-gray-200">
-          <div>
-            <p className="text-sm text-gray-500">Status Hari Ini</p>
-            <h3 className="mt-1 text-2xl font-semibold text-gray-900">
-              {statusToday}
-            </h3>
-            <p className="text-xs text-gray-400">Presensi hari ini</p>
-          </div>
+        <div className="stat-card group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-brand-50 dark:bg-brand-500/10 rounded-full -translate-y-1/2 translate-x-1/2 transition-transform duration-500 group-hover:scale-125" />
+          <div className="flex items-center justify-between relative">
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Status Hari Ini</p>
+              <h3 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
+                {statusToday}
+              </h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Presensi hari ini</p>
+            </div>
 
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-purple-100">
-            <Fingerprint className="text-purple-600 w-6 h-6" />
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-50 dark:bg-brand-500/15 transition-transform duration-300 group-hover:scale-110">
+              <Fingerprint className="text-brand-500 w-7 h-7" />
+            </div>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../../services/supabaseClient";
 import { useDialog } from "../../../../components/ui/AppDialog";
 import EmployeeSearchSelect from "../../../../components/common/EmployeeSearchSelect";
+import { Search, Plus, Pencil, Trash2, X } from "lucide-react";
 
 type Employee = {
   id: string;
@@ -160,26 +161,29 @@ export default function LeaveQuotaTab() {
   });
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <h3 className="section-title">
           Kuota Cuti Karyawan
         </h3>
 
         <div className="flex flex-col md:flex-row gap-3">
-          <input
-            type="text"
-            placeholder="Cari karyawan..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
-          />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari karyawan..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input-field pl-10 w-64"
+            />
+          </div>
 
           <select
             value={filterYear}
             onChange={(e) => setFilterYear(Number(e.target.value))}
-            className="border rounded-lg px-3 py-2 text-sm">
+            className="select-field w-auto">
             {[2024, 2025, 2026, 2027].map((y) => (
               <option key={y}>{y}</option>
             ))}
@@ -187,87 +191,77 @@ export default function LeaveQuotaTab() {
 
           <button
             onClick={openCreate}
-            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg">
-            + Tambah Kuota
+            className="btn-primary">
+            <Plus className="w-4 h-4" />
+            Tambah Kuota
           </button>
         </div>
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="border-b dark:border-gray-700 text-gray-500">
+      <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+        <table className="premium-table">
+          <thead>
             <tr>
-              <th className="py-3 text-left">Nama</th>
-              <th className="text-left">Quota</th>
-              <th className="text-left">Digunakan</th>
-              <th className="text-left">Sisa</th>
-              <th className="text-left">Tahun</th>
+              <th>Nama</th>
+              <th>Quota</th>
+              <th>Digunakan</th>
+              <th>Sisa</th>
+              <th>Tahun</th>
               <th className="text-right">Aksi</th>
             </tr>
           </thead>
 
           <tbody>
+            {filteredQuotas.length === 0 && (
+              <tr>
+                <td colSpan={6} className="text-center py-8 text-gray-400 dark:text-gray-500">
+                  Tidak ada data kuota cuti
+                </td>
+              </tr>
+            )}
             {filteredQuotas.map((q) => (
-              <tr
-                key={q.id}
-                className="border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5">
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
+              <tr key={q.id}>
+                <td className="font-medium">
                   {q.employees?.full_name}
                 </td>
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
-                  <span className=" text-blue-100 bg-blue-600 py-1 px-2 rounded-full">
+                <td>
+                  <span className="badge badge-info">
                     {q.total_days} Hari
                   </span>
                 </td>
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
-                  <span className=" text-red-100 bg-red-600 py-1 px-2 rounded-full">
+                <td>
+                  <span className="badge badge-danger">
                     {q.used_days} Hari
                   </span>
                 </td>
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
-                  <span className=" text-green-100 bg-green-600 py-1 px-2 rounded-full">
+                <td>
+                  <span className="badge badge-success">
                     {q.remaining_days} Hari
                   </span>
                 </td>
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
+                <td>
                   {q.year}
                 </td>
 
-                <td className="text-right space-x-3">
-                  <button onClick={() => openEdit(q)} className="text-blue-600">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      className="size-6">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                      />
-                    </svg>
-                  </button>
+                <td className="text-right">
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={() => openEdit(q)}
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-brand-50 text-brand-600 hover:bg-brand-100 dark:bg-brand-500/15 dark:text-brand-400 dark:hover:bg-brand-500/25 transition-colors"
+                      title="Edit"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
 
-                  <button
-                    onClick={() => deleteQuota(q.id)}
-                    className="text-red-600">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      className="size-6">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                      />
-                    </svg>
-                  </button>
+                    <button
+                      onClick={() => deleteQuota(q.id)}
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-error-50 text-error-600 hover:bg-error-100 dark:bg-error-500/15 dark:text-error-400 dark:hover:bg-error-500/25 transition-colors"
+                      title="Hapus"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -278,27 +272,26 @@ export default function LeaveQuotaTab() {
       {/* Mobile Card */}
       <div className="md:hidden space-y-4">
         {filteredQuotas.map((q) => (
-          <div key={q.id} className="border rounded-xl p-4 space-y-2">
-            <div className="font-semibold">{q.employees?.full_name}</div>
-
+          <div key={q.id} className="premium-card premium-card-hover !p-4 space-y-3">
+            <div className="font-semibold text-gray-800 dark:text-gray-200">{q.employees?.full_name}</div>
 
             <div className="flex justify-between text-sm">
-              <span>Total: {q.total_days}</span>
-              <span>Digunakan: {q.used_days}</span>
-              <span>Sisa: {q.remaining_days}</span>
+              <span className="badge badge-info">{q.total_days} Hari</span>
+              <span className="badge badge-danger">{q.used_days} Digunakan</span>
+              <span className="badge badge-success">{q.remaining_days} Sisa</span>
             </div>
 
-            <div className="flex justify-between text-xs text-gray-400">
+            <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 items-center">
               <span>Tahun {q.year}</span>
 
-              <div className="space-x-3">
-                <button onClick={() => openEdit(q)} className="text-blue-600">
+              <div className="flex gap-2">
+                <button onClick={() => openEdit(q)} className="text-brand-500 font-medium">
                   Edit
                 </button>
 
                 <button
                   onClick={() => deleteQuota(q.id)}
-                  className="text-red-600">
+                  className="text-error-500 font-medium">
                   Hapus
                 </button>
               </div>
@@ -309,68 +302,77 @@ export default function LeaveQuotaTab() {
 
       {/* Dialog */}
       {openDialog && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-999">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md space-y-4">
-            <h4 className="text-lg font-semibold">
-              {editing ? "Edit Kuota Karyawan" : "Tambah Kuota Karyawan"}
-            </h4>
-
-            <div>
-              <label className="text-sm font-medium">Karyawan</label>
-              <EmployeeSearchSelect
-                employees={employees}
-                value={form.employee_id}
-                onChange={(id: any) => setForm({ ...form, employee_id: id })}
-              />
+        <div className="dialog-backdrop">
+          <div className="dialog-content p-8 w-full max-w-md space-y-5">
+            <div className="flex justify-between items-center">
+              <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                {editing ? "Edit Kuota Karyawan" : "Tambah Kuota Karyawan"}
+              </h4>
+              <button
+                onClick={() => setOpenDialog(false)}
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Karyawan</label>
+                <EmployeeSearchSelect
+                  employees={employees}
+                  value={form.employee_id}
+                  onChange={(id: any) => setForm({ ...form, employee_id: id })}
+                />
+              </div>
 
-            <div>
-              <label className="text-sm font-medium">Tahun</label>
-              <input
-                type="number"
-                value={form.year}
-                onChange={(e) =>
-                  setForm({ ...form, year: Number(e.target.value) })
-                }
-                className="w-full border rounded-lg px-3 py-2 mt-1"
-              />
-            </div>
 
-            <div>
-              <label className="text-sm font-medium">Total Hari</label>
-              <input
-                type="number"
-                value={form.total_days}
-                onChange={(e) =>
-                  setForm({ ...form, total_days: Number(e.target.value) })
-                }
-                className="w-full border rounded-lg px-3 py-2 mt-1"
-              />
-            </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Tahun</label>
+                <input
+                  type="number"
+                  value={form.year}
+                  onChange={(e) =>
+                    setForm({ ...form, year: Number(e.target.value) })
+                  }
+                  className="input-field"
+                />
+              </div>
 
-            <div>
-              <label className="text-sm font-medium">Digunakan</label>
-              <input
-                type="number"
-                value={form.used_days}
-                onChange={(e) =>
-                  setForm({ ...form, used_days: Number(e.target.value) })
-                }
-                className="w-full border rounded-lg px-3 py-2 mt-1"
-              />
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Total Hari</label>
+                <input
+                  type="number"
+                  value={form.total_days}
+                  onChange={(e) =>
+                    setForm({ ...form, total_days: Number(e.target.value) })
+                  }
+                  className="input-field"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Digunakan</label>
+                <input
+                  type="number"
+                  value={form.used_days}
+                  onChange={(e) =>
+                    setForm({ ...form, used_days: Number(e.target.value) })
+                  }
+                  className="input-field"
+                />
+              </div>
             </div>
 
             <div className="flex justify-end gap-3 pt-3">
               <button
                 onClick={() => setOpenDialog(false)}
-                className="border px-4 py-2 rounded-lg">
+                className="btn-secondary">
                   Batal
               </button>
 
               <button
                 onClick={saveQuota}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                className="btn-primary">
                 Simpan
               </button>
             </div>

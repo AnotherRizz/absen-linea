@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../services/supabaseClient";
 import { useDialog } from "../../../../components/ui/AppDialog";
+import { Plus, Pencil, Trash2, X } from "lucide-react";
 
 type LeaveType = {
   id: string;
@@ -130,98 +131,79 @@ export default function LeaveTypesTab() {
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-          Jenis Cuti <br />
-          <small className="text-gray-400">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="section-title">Jenis Cuti</h3>
+          <p className="section-subtitle mt-1">
             Deskripsikan jenis dan ketentuan cuti
-          </small>
-        </h3>
+          </p>
+        </div>
 
         <button
           onClick={openCreate}
-          className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          + Tambah Jenis Cuti
+          className="btn-primary">
+          <Plus className="w-4 h-4" />
+          Tambah Jenis Cuti
         </button>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="border-b dark:border-gray-700 text-gray-500">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+        <table className="premium-table">
+          <thead>
             <tr>
-              <th className="py-3 text-left">Nama Cuti</th>
-              <th className="text-left">Maksimal Hari</th>
-              <th className="text-left">Mengurangi Kuota?</th>
+              <th>Nama Cuti</th>
+              <th>Maksimal Hari</th>
+              <th>Mengurangi Kuota?</th>
               <th className="text-right">Aksi</th>
             </tr>
           </thead>
 
           <tbody>
             {leaveTypes.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/5">
-                <td className="py-3 font-medium text-gray-800 dark:text-white">
+              <tr key={item.id}>
+                <td className="font-medium">
                   {item.name}
                 </td>
 
-                <td>{item.max_days ?? "-"} Hari</td>
+                <td>{item.max_days ?? "—"} Hari</td>
 
                 <td>
                   {item.reduce_quota ? (
-                    <span className="text-green-600">Ya</span>
+                    <span className="badge badge-success">Ya</span>
                   ) : (
-                    <span className="text-gray-400">Tidak</span>
+                    <span className="badge badge-neutral">Tidak</span>
                   )}
                 </td>
 
-                <td className="text-right space-x-3">
-                  <button
-                    onClick={() => openEdit(item)}
-                    className="text-yellow-600 hover:underline">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      className="size-6">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                      />
-                    </svg>
-                  </button>
+                <td className="text-right">
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={() => openEdit(item)}
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-warning-50 text-warning-600 hover:bg-warning-100 dark:bg-warning-500/15 dark:text-warning-400 dark:hover:bg-warning-500/25 transition-colors"
+                      title="Edit"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
 
-                  <button
-                    onClick={() => deleteLeaveType(item.id)}
-                    className="text-red-600 hover:underline">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                        className="size-6">
-                        <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                      />
-                    </svg>
-                  </button>
+                    <button
+                      onClick={() => deleteLeaveType(item.id)}
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-error-50 text-error-600 hover:bg-error-100 dark:bg-error-500/15 dark:text-error-400 dark:hover:bg-error-500/25 transition-colors"
+                      title="Hapus"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
 
             {leaveTypes.length === 0 && (
               <tr>
-                <td colSpan={4} className="text-center py-8 text-gray-400">
-                  No leave types found
+                <td colSpan={4} className="text-center py-8 text-gray-400 dark:text-gray-500">
+                  Tidak ada jenis cuti
                 </td>
               </tr>
             )}
@@ -231,30 +213,43 @@ export default function LeaveTypesTab() {
 
       {/* Form Dialog */}
       {openDialog && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-999">
-          <div className="bg-white dark:bg-gray-900 rounded-xl p-6 w-full max-w-md">
-            <h4 className="text-lg font-semibold mb-4">
-              {editing ? "Edit Jenis Cuti" : "Tambah Jenis Cuti"}
-            </h4>
+        <div className="dialog-backdrop">
+          <div className="dialog-content p-8 w-full max-w-md space-y-5">
+            <div className="flex justify-between items-center">
+              <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                {editing ? "Edit Jenis Cuti" : "Tambah Jenis Cuti"}
+              </h4>
+              <button
+                onClick={() => setOpenDialog(false)}
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
             <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nama Cuti"
-                className="w-full border rounded-lg px-3 py-2"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Nama Cuti</label>
+                <input
+                  type="text"
+                  placeholder="Nama Cuti"
+                  className="input-field"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </div>
 
-              <input
-                type="number"
-                placeholder="Maksimal Hari (opsional)"
-                className="w-full border rounded-lg px-3 py-2"
-                value={form.max_days}
-                onChange={(e) => setForm({ ...form, max_days: e.target.value })}
-              />
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Maksimal Hari (opsional)</label>
+                <input
+                  type="number"
+                  placeholder="Maksimal Hari"
+                  className="input-field"
+                  value={form.max_days}
+                  onChange={(e) => setForm({ ...form, max_days: e.target.value })}
+                />
+              </div>
 
-              <label className="flex items-center gap-2 text-sm">
+              <label className="flex items-center gap-3 text-sm cursor-pointer">
                 <input
                   type="checkbox"
                   checked={form.reduce_quota}
@@ -264,21 +259,22 @@ export default function LeaveTypesTab() {
                       reduce_quota: e.target.checked,
                     })
                   }
+                  className="w-4 h-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
                 />
-                Mengurangi Kuota Cuti?
+                <span className="text-gray-700 dark:text-gray-300 font-medium">Mengurangi Kuota Cuti?</span>
               </label>
             </div>
 
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setOpenDialog(false)}
-                className="px-4 py-2 text-sm border rounded-lg">
+                className="btn-secondary">
                 Batal
               </button>
 
               <button
                 onClick={saveLeaveType}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg">
+                className="btn-primary">
                 Simpan
               </button>
             </div>
